@@ -2,6 +2,9 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*.pyc
+*.pyo
+*.pyd
 
 # C extensions
 *.so
@@ -172,3 +175,26 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+
+# FastAPI server logs
+*.log
+
+# IDE-specific files
+.vscode/
+.idea/
+*.swp
+
+# Temporary files
+*.bak
+*.tmp
+*.swp
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
