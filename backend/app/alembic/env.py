@@ -8,7 +8,7 @@ from app.core.config import db_settings
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
-config.set_main_option("sqlalchemy.url", db_settings.POSTGRES_DATABASE_URL)
+config.set_main_option("sqlalchemy.url", db_settings.SQLITE_DATABASE_URL)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
