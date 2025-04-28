@@ -1,0 +1,5 @@
+from enum import Enum
+
+
+class ApiTags(Enum):
+    USER = "user"
