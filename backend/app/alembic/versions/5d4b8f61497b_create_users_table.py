@@ -1,11 +1,10 @@
 """create users table
 
 Revision ID: 5d4b8f61497b
-Revises:
+Revises: 
 Create Date: 2025-04-26 01:14:24.283896
 
 """
-
 from typing import Sequence, Union
 
 import sqlalchemy as sa

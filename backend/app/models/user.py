@@ -2,6 +2,7 @@ from datetime import datetime
 
 from core.db import Base
 from sqlalchemy import TIMESTAMP, Boolean, Column, String, Integer
+from sqlalchemy.orm import relationship
 
 
 class User(Base):
@@ -17,3 +18,5 @@ class User(Base):
     updated_at = Column(
         TIMESTAMP, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow
     )
+
+    subscriptions = relationship("Subscription", backref="user", cascade="all, delete")

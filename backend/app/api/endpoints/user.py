@@ -2,7 +2,7 @@ from api.deps import get_db
 from core.security import generate_tokens
 from crud import user as crud_user
 from fastapi import APIRouter, Depends, HTTPException
-from schemas import AuthorizationTokens, LoginRequest, UserCreate
+from schemas import AuthenticatedUser, AuthorizationTokens, LoginRequest, UserCreate
 from services import user as users_service
 from sqlalchemy.orm import Session
 
