@@ -4,6 +4,8 @@ from sqlalchemy.orm import Session
 from models import Subscription
 from schemas import SubscriptionRequest
 from crud.subscribe import is_subscribed
+from crud.user import get_email_by_user_id
+from celery_tasks.tasks import send_subscription_email
 
 
 def user_subscribe(
@@ -17,4 +19,7 @@ def user_subscribe(
     db.add(new_subscription)
     db.commit()
     db.refresh(new_subscription)
+    send_subscription_email.delay(
+        get_email_by_user_id(db, user_id), new_subscription.city
+    )
     return new_subscription

@@ -36,7 +36,7 @@ async def send_request(url: str, params: dict) -> dict[str, Any]:
             raise HTTPException(status_code=500, detail=str(e))
 
 
-def store_weather_data(db: Session, weather_data: dict) -> None:
+def store_weather_data(db: Session, weather_data: dict, city: str) -> None:
     """
     Stores or updates weather data in the database.
 
@@ -50,9 +50,12 @@ def store_weather_data(db: Session, weather_data: dict) -> None:
     - If no record exists, it creates a new weather record and saves it.
 
     """
-    city_name = weather_data.get("name").lower()
+    # logger.info("Storing weather data in the database.")
+    # logger.info(f"Weather data: {weather_data}")
+    # city_name = weather_data.get("name").lower()
+    # logger.info(f"City name: {city}")
     # Try to fetch an existing weather record for this user on specific city
-    weather = db.query(Weather).filter(Weather.city == city_name).first()
+    weather = db.query(Weather).filter(Weather.city == city).first()
 
     if weather:
         # Update existing record
@@ -63,13 +66,12 @@ def store_weather_data(db: Session, weather_data: dict) -> None:
     else:
         # Create new record
         weather = Weather(
-            city=city_name,
+            city=city,
             temperature=weather_data.get("main", {}).get("temp"),
             pressure=weather_data.get("main", {}).get("pressure"),
             humidity=weather_data.get("main", {}).get("humidity"),
             wind_speed=weather_data.get("wind", {}).get("speed"),
         )
         db.add(weather)
-
     db.commit()
     db.refresh(weather)

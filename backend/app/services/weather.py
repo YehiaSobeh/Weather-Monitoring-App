@@ -37,7 +37,7 @@ async def fetch_current_weather(db: Session, r, city: str) -> dict[str, Any]:
         return json.loads(cached_data)
 
     weather_data = await send_request(url, params)
-    store_weather_data(db, weather_data)
+    store_weather_data(db, weather_data, city)
     await r.set(
         cache_key,
         json.dumps(weather_data),
