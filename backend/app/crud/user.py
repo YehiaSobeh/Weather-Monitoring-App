@@ -12,3 +12,8 @@ def get_user_by_id(db: Session, user_id: int) -> User | None:
 
 def check_if_user_with_email_exists(db: Session, email: str) -> bool:
     return db.query(User).filter_by(email=email).first() is not None
+
+
+def get_email_by_user_id(db: Session, user_id: int) -> str | None:
+    user = db.query(User).filter(User.id == user_id).first()
+    return user.email if user else None

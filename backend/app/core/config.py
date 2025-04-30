@@ -30,6 +30,14 @@ class WeatherSettings:
     rate_limit_window: int = 10
 
 
+class MailSettings:
+    mail_host: str = config("MAIL_HOST")
+    mail_port: int = config("MAIL_PORT")
+    mail_username: str = config("MAIL_USERNAME")
+    mail_password: str = config("MAIL_PASSWORD")
+
+
 db_settings = DBSettings()
 authorization_settings = AuthorizationSettings()
 weather_settings = WeatherSettings()
+mail_settings = MailSettings()

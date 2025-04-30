@@ -29,7 +29,7 @@ def upgrade() -> None:
             nullable=False,
         ),
         sa.Column("city", sa.String, nullable=False),
-        sa.Column("condition_thresholds", sa.Float, nullable=False),
+        sa.Column("temperature_threshold", sa.Float, nullable=False),
         sa.Column(
             "created_at", sa.DateTime(), server_default=sa.func.now(), nullable=False
         ),
