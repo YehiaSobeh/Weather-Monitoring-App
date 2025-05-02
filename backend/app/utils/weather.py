@@ -55,23 +55,15 @@ def store_weather_data(db: Session, weather_data: dict, city: str) -> None:
     # city_name = weather_data.get("name").lower()
     # logger.info(f"City name: {city}")
     # Try to fetch an existing weather record for this user on specific city
-    weather = db.query(Weather).filter(Weather.city == city).first()
-
-    if weather:
-        # Update existing record
-        weather.temperature = weather_data.get("main", {}).get("temp")
-        weather.pressure = weather_data.get("main", {}).get("pressure")
-        weather.humidity = weather_data.get("main", {}).get("humidity")
-        weather.wind_speed = weather_data.get("wind", {}).get("speed")
-    else:
-        # Create new record
-        weather = Weather(
-            city=city,
-            temperature=weather_data.get("main", {}).get("temp"),
-            pressure=weather_data.get("main", {}).get("pressure"),
-            humidity=weather_data.get("main", {}).get("humidity"),
-            wind_speed=weather_data.get("wind", {}).get("speed"),
-        )
-        db.add(weather)
+    
+    weather = Weather(
+        city=city.lower(),
+        temperature=weather_data.get("main", {}).get("temp"),
+        pressure=weather_data.get("main", {}).get("pressure"),
+        humidity=weather_data.get("main", {}).get("humidity"),
+        wind_speed=weather_data.get("wind", {}).get("speed"),
+    )
+    db.add(weather)
+    
     db.commit()
     db.refresh(weather)
