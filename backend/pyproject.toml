@@ -29,3 +29,21 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.group.dev.dependencies]
 alembic = "^1.15.2"
+pytest = "^8.3.5"
+pytest-cov = "^6.1.1"
+httpx = "^0.28.1"
+playwright = "^1.51.0"
+pytest-playwright = "^0.7.0"
+locust = "^2.36.2"
+atheris = "^2.3.0"
+hypothesis = "^6.131.9"
+freezegun = "^1.5.1"
+sqlalchemy = "^2.0.40"
+passlib = "^1.7.4"
+cryptography = "^44.0.3"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.3.5"
+pytest-cov = "^6.1.1"
+freezegun = "^1.5.1"
+
