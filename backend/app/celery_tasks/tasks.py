@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-
+from sqlalchemy import desc
 from app.celery_app import app
 from core.db import session_local
 from mailingsys.mailer import send_mail
@@ -87,7 +87,12 @@ def check_and_trigger_alerts(db: Session) -> None:
     for sub in subscriptions:
         sub_city = sub.city.lower()
         # Get the latest weather data for the subscriber's city
-        weather = db.query(Weather).filter(Weather.city == sub_city).first()
+        weather = (
+            db.query(Weather)
+            .filter(Weather.city == sub_city)
+            .order_by(desc(Weather.fetched_at))
+            .first()
+        )
         if not weather:
             raise HTTPException(
                 status_code=404, detail=f"No weather data found for city: {sub.city}"

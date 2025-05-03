@@ -29,6 +29,10 @@ def upgrade() -> None:
         sa.Column("humidity", sa.Integer(), nullable=False),
         sa.Column("wind_speed", sa.Float(), nullable=False),
         sa.Column("pressure", sa.Integer(), nullable=True),
+        sa.Column(
+            "fetched_at", sa.DateTime(), server_default=sa.func.now(), nullable=False
+        ),
+        sa.Column("updated_at", sa.TIMESTAMP()),
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_index(op.f("ix_weather_city"), "weather", ["city"], unique=False)
