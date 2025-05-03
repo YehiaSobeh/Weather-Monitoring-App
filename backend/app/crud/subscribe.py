@@ -1,5 +1,4 @@
 from models import Subscription
-from sqlalchemy.orm import Session
 
 
 def is_subscribed(db, user_id: int) -> bool:

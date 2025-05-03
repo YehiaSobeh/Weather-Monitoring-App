@@ -48,7 +48,9 @@ def regenerate_access_token(refresh_token: str) -> dict:
     current_datetime = datetime.now(tz=timezone.utc)
     access_token_expires_in = (
         current_datetime
-        + timedelta(minutes=authorization_settings.access_token_expires_minutes)
+        + timedelta(
+            minutes=authorization_settings.access_token_expires_minutes
+        )
     ).timestamp()
     access_token = generate_jwt_token(
         {
@@ -57,7 +59,10 @@ def regenerate_access_token(refresh_token: str) -> dict:
             "iss": ACCESS_TOKEN_ISSUER,
         }
     )
-    return {"access_token": access_token, "expires_in": int(access_token_expires_in)}
+    return {
+        "access_token": access_token,
+        "expires_in": int(access_token_expires_in)
+    }
 
 
 def generate_tokens(user_id: str) -> dict:
@@ -65,16 +70,28 @@ def generate_tokens(user_id: str) -> dict:
 
     access_token_expires_in = (
         current_datetime
-        + timedelta(minutes=int(authorization_settings.access_token_expires_minutes))
+        + timedelta(
+            minutes=int(
+                authorization_settings.access_token_expires_minutes
+            )
+        )
     ).timestamp()
 
     refresh_token_expires_in = (
         current_datetime
-        + timedelta(days=int(authorization_settings.refresh_token_expires_days))
+        + timedelta(
+            days=int(
+                authorization_settings.refresh_token_expires_days
+            )
+        )
     ).timestamp()
 
     access_token = generate_jwt_token(
-        {"user_id": user_id, "exp": access_token_expires_in, "iss": ACCESS_TOKEN_ISSUER}
+        {
+            "user_id": user_id,
+            "exp": access_token_expires_in,
+            "iss": ACCESS_TOKEN_ISSUER
+        }
     )
     refresh_token = generate_jwt_token(
         {

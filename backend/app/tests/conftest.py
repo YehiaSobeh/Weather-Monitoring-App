@@ -4,7 +4,11 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from core.db import Base
-from api.deps import get_cache_redis, get_db, rate_limit, get_user_id_from_token
+from api.deps import (
+    get_cache_redis,
+    get_db, rate_limit,
+    get_user_id_from_token
+)
 from main import app
 from core.config import db_settings
 
@@ -13,7 +17,6 @@ from core.config import db_settings
 def db_engine():
     engine = create_engine(
         db_settings.SQLITE_DATABASE_URL,
-        # Allow the same database connection to be shared across multiple threads.
         connect_args={"check_same_thread": False},
     )
 
@@ -24,7 +27,11 @@ def db_engine():
 
 @pytest.fixture(scope="function")
 def db_session(db_engine):
-    TestSession = sessionmaker(autocommit=False, autoflush=False, bind=db_engine)
+    TestSession = sessionmaker(
+        autocommit=False,
+        autoflush=False,
+        bind=db_engine
+    )
     connection = db_engine.connect()
     _ = connection.begin()
     session = TestSession(bind=connection)
@@ -55,15 +62,17 @@ def client():
 # https://fastapi.tiangolo.com/advanced/testing-dependencies/#use-the-appdependency_overrides-attribute
 # Mock dependencies for the tests
 
-"""autouse : True means that this fixture will be automatically used by all tests
- wthiout the need to explicitly pass it as an argument to the test function.
+"""
+autouse : True means that this fixture
+will be automatically used by all tests
+wthiout the need to explicitly pass it
+as an argument to the test function.
  """
 
 
 @pytest.fixture(autouse=True)
 def override_dependencies():
     def mock_get_db():
-
         return "mock_db"
 
     def mock_get_cache_redis():

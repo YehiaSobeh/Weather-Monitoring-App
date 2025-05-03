@@ -2,7 +2,7 @@ from api.deps import get_db
 from core.security import generate_tokens
 from crud import user as crud_user
 from fastapi import APIRouter, Depends, HTTPException
-from schemas import AuthenticatedUser, AuthorizationTokens, LoginRequest, UserCreate
+from schemas import AuthorizationTokens, LoginRequest, UserCreate
 from services import user as users_service
 from sqlalchemy.orm import Session
 
@@ -29,7 +29,9 @@ def login(
     if not user:
         raise invalid_credentials_error
 
-    if not users_service.compare_password_with_hash(login_data.password, user.password):
+    if not users_service.compare_password_with_hash(
+        login_data.password, user.password
+    ):
         raise invalid_credentials_error
 
     return generate_tokens(str(user.id))

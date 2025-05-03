@@ -3,7 +3,11 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from api.deps import get_cache_redis, get_db, rate_limit, get_user_id_from_token
+from api.deps import (
+    get_cache_redis,
+    get_db, rate_limit,
+    get_user_id_from_token
+)
 from services import weather as weather_service
 from crud import weather as weather_crud
 from schemas.weather import WeatherHistoryItem
@@ -43,7 +47,7 @@ async def get_weather_history(
     db: Session = Depends(get_db),
     user_id=Depends(get_user_id_from_token),
 ) -> list[WeatherHistoryItem]:
- 
+
     records = weather_crud.get_weather_history(db, city)
     if not records:
         raise HTTPException(404, f"No weather history for city: {city}")

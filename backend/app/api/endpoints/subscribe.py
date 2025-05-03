@@ -11,8 +11,11 @@ router = APIRouter()
 @router.post(
     "/create",
     summary="Subscribe to Alerts",
-    description="Allows a user to subscribe to alerts by providing subscription details.",
+    description="""
+    Allows a user to subscribe to alerts
+    by providing subscription details.",
     response_model=SubscriptionRequest,
+    """
 )
 def subscribe(
     subscription: SubscriptionRequest,

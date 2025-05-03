@@ -16,7 +16,13 @@ class User(Base):
     is_active = Column(Boolean, default=True)
     created_at = Column(TIMESTAMP, nullable=False, default=datetime.utcnow)
     updated_at = Column(
-        TIMESTAMP, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow
+        TIMESTAMP, nullable=False,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow
     )
 
-    subscriptions = relationship("Subscription", backref="user", cascade="all, delete")
+    subscriptions = relationship(
+        "Subscription",
+        backref="user",
+        cascade="all, delete"
+    )

@@ -9,7 +9,8 @@ from models.weather import Weather
 
 async def send_request(url: str, params: dict) -> dict[str, Any]:
     """
-    Sends an asynchronous GET request to the specified URL with the provided parameters.
+    Sends an asynchronous GET request to
+    the specified URL with the provided parameters.
 
     Parameters:
         url (str): The target URL for the HTTP request.
@@ -19,7 +20,8 @@ async def send_request(url: str, params: dict) -> dict[str, Any]:
         dict: The JSON response from the HTTP request.
 
     Raises:
-        HTTPException: If the HTTP request fails with a status code error or encounters an unexpected error.
+        HTTPException: If the HTTP request fails with
+        a status code error or encounters an unexpected error.
     """
     # Create an asynchronous HTTP client session using httpx.
     async with httpx.AsyncClient(timeout=10) as client:
@@ -46,7 +48,8 @@ def store_weather_data(db: Session, weather_data: dict, city: str) -> None:
 
     Process:
     - Checks if a weather record exists for the given city.
-    - If the record exists, it updates the temperature, pressure, humidity, and wind speed.
+    - If the record exists, it updates the temperature,
+      pressure, humidity, and wind speed.
     - If no record exists, it creates a new weather record and saves it.
 
     """
@@ -55,7 +58,7 @@ def store_weather_data(db: Session, weather_data: dict, city: str) -> None:
     # city_name = weather_data.get("name").lower()
     # logger.info(f"City name: {city}")
     # Try to fetch an existing weather record for this user on specific city
-    
+
     weather = Weather(
         city=city.lower(),
         temperature=weather_data.get("main", {}).get("temp"),
@@ -64,6 +67,6 @@ def store_weather_data(db: Session, weather_data: dict, city: str) -> None:
         wind_speed=weather_data.get("wind", {}).get("speed"),
     )
     db.add(weather)
-    
+
     db.commit()
     db.refresh(weather)

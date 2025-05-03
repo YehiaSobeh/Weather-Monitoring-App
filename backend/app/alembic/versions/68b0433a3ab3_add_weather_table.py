@@ -22,7 +22,10 @@ def upgrade() -> None:
     op.create_table(
         "weather",
         sa.Column(
-            "id", sa.Integer(), primary_key=True, autoincrement=True, nullable=False
+            "id", sa.Integer(),
+            primary_key=True,
+            autoincrement=True,
+            nullable=False
         ),
         sa.Column("city", sa.String(), nullable=False),
         sa.Column("temperature", sa.Float(), nullable=False),
@@ -30,7 +33,9 @@ def upgrade() -> None:
         sa.Column("wind_speed", sa.Float(), nullable=False),
         sa.Column("pressure", sa.Integer(), nullable=True),
         sa.Column(
-            "fetched_at", sa.DateTime(), server_default=sa.func.now(), nullable=False
+            "fetched_at", sa.DateTime(),
+            server_default=sa.func.now(),
+            nullable=False
         ),
         sa.Column("updated_at", sa.TIMESTAMP()),
         sa.PrimaryKeyConstraint("id"),

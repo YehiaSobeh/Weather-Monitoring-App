@@ -1,7 +1,7 @@
 """create users table
 
 Revision ID: 5d4b8f61497b
-Revises: 
+Revises:
 Create Date: 2025-04-26 01:14:24.283896
 
 """
@@ -27,7 +27,9 @@ def upgrade() -> None:
         sa.Column("password", sa.String(255), nullable=False),
         sa.Column("is_active", sa.Boolean, default=True, nullable=False),
         sa.Column(
-            "created_at", sa.DateTime(), server_default=sa.func.now(), nullable=False
+            "created_at", sa.DateTime(),
+            server_default=sa.func.now(),
+            nullable=False
         ),
         sa.Column("updated_at", sa.TIMESTAMP()),
     )

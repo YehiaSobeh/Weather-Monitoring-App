@@ -1,5 +1,4 @@
 from unittest.mock import patch
-from unittest.mock import AsyncMock
 import pytest
 
 
@@ -10,7 +9,8 @@ async def test_get_current_weather(client):
 
     # Mocking the fetch_current_weather method
     with patch(
-        "services.weather.fetch_current_weather", return_value=fake_weather_data
+        "services.weather.fetch_current_weather",
+        return_value=fake_weather_data
     ):
         response = client.get(f"/api/v1/weather/current/{city}")
 

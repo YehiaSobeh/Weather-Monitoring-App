@@ -4,13 +4,20 @@ from core.config import weather_settings
 
 
 class RedisClient:
-    def __init__(self, redis_url: str, cache_db: int = 0, rate_limit_db: int = 1):
+    def __init__(
+        self,
+        redis_url: str,
+        cache_db: int = 0,
+        rate_limit_db: int = 1,
+    ):
         """
-        Initializes Redis client with separate databases for caching and rate limiting.
+        Initializes Redis client with separate databases
+        for caching and rate limiting.
 
         :param redis_url: Redis connection URL
         :param cache_db: Redis database index for caching (default: 0)
-        :param rate_limit_db: Redis database index for rate limiting (default: 1)
+        :param rate_limit_db: Redis database index
+        for rate limiting (default: 1)
         """
         self.redis_url = redis_url
         self.cache_db = cache_db
@@ -21,10 +28,14 @@ class RedisClient:
     async def init(self):
         """Initialize Redis connections for caching and rate limiting."""
         self.cache_redis = await Redis.from_url(
-            self.redis_url, db=self.cache_db, decode_responses=True
+            self.redis_url,
+            db=self.cache_db,
+            decode_responses=True,
         )
         self.rate_limit_redis = await Redis.from_url(
-            self.redis_url, db=self.rate_limit_db, decode_responses=True
+            self.redis_url,
+            db=self.rate_limit_db,
+            decode_responses=True,
         )
 
     async def close(self):
@@ -40,4 +51,6 @@ class RedisClient:
         return self.rate_limit_redis
 
 
-r = RedisClient(f"redis://{weather_settings.redis_host}:{weather_settings.redis_port}")
+r = RedisClient(
+    f"redis://{weather_settings.redis_host}:{weather_settings.redis_port}"
+)

@@ -84,5 +84,6 @@ async def rate_limit(
 
     if count > weather_settings.rate_limit_count:
         raise HTTPException(
-            status_code=429, detail="Too Many Requests. Please try again later."
+            status_code=429,
+            detail="Too Many Requests. Please try again later."
         )

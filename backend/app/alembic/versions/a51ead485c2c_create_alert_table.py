@@ -27,7 +27,9 @@ def upgrade() -> None:
         sa.Column("threshold", sa.Float(), nullable=False),
         sa.Column("is_active", sa.Boolean, default=False, nullable=False),
         sa.Column(
-            "created_at", sa.DateTime(), server_default=sa.func.now(), nullable=False
+            "created_at", sa.DateTime(),
+            server_default=sa.func.now(),
+            nullable=False
         ),
         sa.ForeignKeyConstraint(
             ["subscription_id"],

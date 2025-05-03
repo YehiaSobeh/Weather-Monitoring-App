@@ -1,7 +1,7 @@
 from datetime import datetime
 from pydantic import BaseModel
- 
- 
+
+
 class WeatherHistoryItem(BaseModel):
     city: str
     temperature: float

@@ -19,7 +19,11 @@ logger = logging.getLogger(__name__)
 @app.task(name="send_subscription_email")
 def send_subscription_email(user_email: str, city: str):
     subject = "Welcome to our Weather Alert System!"
-    body = f"Thank you for subscribing to Weather Alerts! You will now receive weather alerts for {city} "
+    body = (
+        f"Thank you for subscribing to Weather Alerts! "
+        f"You will now receive weather alerts for {city}."
+    )
+
     send_mail(user_email, subject, body)
     return "Email sent successfully!"
 
@@ -27,7 +31,8 @@ def send_subscription_email(user_email: str, city: str):
 @app.task(name="send_weather_alert_email")
 def send_weather_alert_email(user_email: str, city: str, payload: dict):
     """
-    Sends an alert email when a subscription’s temperature threshold is crossed.
+    Sends an alert email when a subscription’s
+    temperature threshold is crossed.
     """
     subject = f"⚠ Weather Alert for {city}!"
     body = (
@@ -44,7 +49,8 @@ def send_weather_alert_email(user_email: str, city: str, payload: dict):
 @app.task(name="update_weather_data")
 def update_weather_data(city: str):
     """
-    Updates weather data for a given city and checks if any alert conditions are triggered.
+    Updates weather data for a given city and
+    checks if any alert conditions are triggered.
     """
     url = f"{weather_settings.weather_url}/weather"
 
@@ -95,7 +101,8 @@ def check_and_trigger_alerts(db: Session) -> None:
         )
         if not weather:
             raise HTTPException(
-                status_code=404, detail=f"No weather data found for city: {sub.city}"
+                status_code=404,
+                detail=f"No weather data found for city: {sub.city}"
             )
 
         # Check if the weather condition exceeds the subscriber's threshold
@@ -103,7 +110,10 @@ def check_and_trigger_alerts(db: Session) -> None:
             # Check if an active alert already exists for this subscription
             existing_alert = (
                 db.query(Alert)
-                .filter(Alert.subscription_id == sub.id, Alert.is_active == True)
+                .filter(
+                    Alert.subscription_id == sub.id,
+                    Alert.is_active
+                )
                 .first()
             )
 

@@ -13,13 +13,21 @@ def user_subscribe(
 ) -> Subscription:
 
     if is_subscribed(db, user_id):
-        raise HTTPException(status_code=400, detail="User already has a subscription.")
+        raise HTTPException(
+            status_code=400, detail="User already has a subscription."
+        )
 
-    new_subscription = Subscription(**subscription.model_dump(), user_id=user_id)
+    new_subscription = Subscription(
+        **subscription.model_dump(),
+        user_id=user_id
+    )
     db.add(new_subscription)
     db.commit()
     db.refresh(new_subscription)
+
     send_subscription_email.delay(
-        get_email_by_user_id(db, user_id), new_subscription.city
+        get_email_by_user_id(db, user_id),
+        new_subscription.city,
     )
+
     return new_subscription
