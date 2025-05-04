@@ -13,7 +13,10 @@ def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 
 
-def compare_password_with_hash(input_password: str, stored_password_hash: str) -> bool:
+def compare_password_with_hash(
+    input_password: str,
+    stored_password_hash: str
+) -> bool:
     return pwd_context.verify(input_password, stored_password_hash)
 
 

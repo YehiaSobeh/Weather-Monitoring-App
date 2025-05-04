@@ -29,7 +29,9 @@ def login(
     if not user:
         raise invalid_credentials_error
 
-    if not users_service.compare_password_with_hash(login_data.password, user.password):
+    if not users_service.compare_password_with_hash(
+        login_data.password, user.password
+    ):
         raise invalid_credentials_error
 
     return generate_tokens(str(user.id))

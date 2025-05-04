@@ -19,5 +19,25 @@ class AuthorizationSettings:
     refresh_token_expires_days: int = config("REFRESH_TOKEN_EXPIRES_DAYS")
 
 
+class WeatherSettings:
+    weather_api_key: str = config("WEATHER_API_KEY")
+    weather_url: str = "https://api.openweathermap.org/data/2.5"
+    redis_host: str = "localhost"
+    redis_port: int = "6379"
+    current_weather_cache_ttl: int = 600
+    forecast_cache_ttl: int = 3600
+    rate_limit_count: int = 10
+    rate_limit_window: int = 10
+
+
+class MailSettings:
+    mail_host: str = config("MAIL_HOST")
+    mail_port: int = config("MAIL_PORT")
+    mail_username: str = config("MAIL_USERNAME")
+    mail_password: str = config("MAIL_PASSWORD")
+
+
 db_settings = DBSettings()
 authorization_settings = AuthorizationSettings()
+weather_settings = WeatherSettings()
+mail_settings = MailSettings()

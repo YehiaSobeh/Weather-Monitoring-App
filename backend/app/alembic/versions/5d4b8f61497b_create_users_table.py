@@ -5,7 +5,6 @@ Revises:
 Create Date: 2025-04-26 01:14:24.283896
 
 """
-
 from typing import Sequence, Union
 
 import sqlalchemy as sa
@@ -28,7 +27,9 @@ def upgrade() -> None:
         sa.Column("password", sa.String(255), nullable=False),
         sa.Column("is_active", sa.Boolean, default=True, nullable=False),
         sa.Column(
-            "created_at", sa.DateTime(), server_default=sa.func.now(), nullable=False
+            "created_at", sa.DateTime(),
+            server_default=sa.func.now(),
+            nullable=False
         ),
         sa.Column("updated_at", sa.TIMESTAMP()),
     )
