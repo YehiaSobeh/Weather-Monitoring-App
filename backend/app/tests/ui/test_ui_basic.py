@@ -1,4 +1,3 @@
-"""Basic UI tests that hit the FastAPI app via TestClient."""
 from fastapi.testclient import TestClient
 from app.main import app
 import uuid

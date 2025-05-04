@@ -7,7 +7,6 @@ async def test_get_current_weather(client):
     city = "malaysia"
     fake_weather_data = {"temp": 15}
 
-    # Mocking the fetch_current_weather method
     with patch(
         "services.weather.fetch_current_weather",
         return_value=fake_weather_data

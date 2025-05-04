@@ -15,11 +15,9 @@ class DummySession:
         self.committed = True
 
     def refresh(self, obj):
-        # simulate autoincrement ID
         obj.id = 1
         self.refreshed.append(obj)
 
-# —— Autouse fixture to stub out token generation ——  
 @pytest.fixture(autouse=True)
 def stub_generate_tokens(monkeypatch):
     monkeypatch.setattr(
@@ -37,7 +35,6 @@ def test_hash_and_verify_password():
 def test_create_user_persists_and_returns_token():
     db = DummySession()
 
-    # create a simple namespace for user_data
     class UD:
         name = "Alice"
         email = "alice@example.com"
@@ -45,17 +42,13 @@ def test_create_user_persists_and_returns_token():
         surname = "Liddell"
 
     result = create_user(db, UD)
-    # Because refresh set id=1 and stub returns {"token": user_id}
     assert result == {"token": "1"}
 
-    # Ensure DB methods were invoked
     assert db.committed is True
     assert len(db.added) == 1
     user_obj = db.added[0]
-    # Check fields copied over
     assert user_obj.name == "Alice"
     assert user_obj.email == "alice@example.com"
     assert user_obj.surname == "Liddell"
-    # Password was hashed
     assert user_obj.password != "pw123"
     assert compare_password_with_hash("pw123", user_obj.password)

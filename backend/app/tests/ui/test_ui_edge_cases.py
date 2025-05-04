@@ -1,4 +1,3 @@
-"""Edge‑case UI tests for user register/login endpoints."""
 from fastapi.testclient import TestClient
 from app.main import app
 import uuid
