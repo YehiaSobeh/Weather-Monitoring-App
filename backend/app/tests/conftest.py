@@ -43,6 +43,37 @@ def db_session(db_engine):
     connection.close()
 
 
+class DummyQuery:
+    """
+    A stand-in for SQLAlchemy Query that supports:
+     - .all()
+     - .filter(...).order_by(...).first()
+    """
+    def __init__(self, results):
+        self._results = results
+
+    def all(self):
+        return self._results
+
+    def filter(self, *args, **kwargs):
+        return self
+
+    def order_by(self, *args, **kwargs):
+        return self
+
+    def first(self):
+        return self._results[0] if self._results else None
+
+
+@pytest.fixture
+def dummy_query():
+    """
+    Factory for DummyQuery:
+      dummy_query([a, b, c]) -> DummyQuery([a, b, c])
+    """
+    return DummyQuery
+
+
 @pytest.fixture
 def subscription_data():
     return {
