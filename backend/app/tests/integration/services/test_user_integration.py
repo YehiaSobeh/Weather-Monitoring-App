@@ -1,7 +1,7 @@
 import pytest
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import sessionmaker, Session
-from freezegun import freeze_time
+# from freezegun import freeze_time
 from unittest.mock import Mock
 
 # 1) First mock dependencies before any imports
