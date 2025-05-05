@@ -4,15 +4,18 @@ from sqlalchemy import create_engine, inspect
 from core.db import Base, engine as app_engine
 from core.config import db_settings
 
+
 @pytest.fixture(scope="module")
 def test_engine():
     """
-    Create a fresh SQLite engine for testing, initialize schema, and drop afterwards.
+    Create a fresh SQLite engine for testing, initialize schema,
+    and drop afterwards.
     """
     engine = create_engine(db_settings.SQLITE_DATABASE_URL)
     Base.metadata.create_all(bind=engine)
     yield engine
     Base.metadata.drop_all(bind=engine)
+
 
 def test_base_has_tables(test_engine):
     """
@@ -23,8 +26,10 @@ def test_base_has_tables(test_engine):
     # At minimum, we should get a list (even if empty)
     assert isinstance(tables, list)
 
+
 def test_engine_url_matches_config(test_engine):
     """
-    Verify that the application's engine URL matches the test engine URL from config.
+    Verify that the application's engine URL matches the
+    test engine URL from config.
     """
     assert str(app_engine.url) == str(test_engine.url)

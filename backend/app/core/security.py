@@ -3,9 +3,6 @@ import jwt
 
 from core.config import authorization_settings
 
-ACCESS_TOKEN_ISSUER = "backend:access-token"
-REFRESH_TOKEN_ISSUER = "backend:refresh-token"
-
 
 def generate_jwt_token(token_data: dict) -> str:
     return jwt.encode(
@@ -20,7 +17,7 @@ def decode_access_token(token: str) -> dict:
         jwt=token,
         key=authorization_settings.rsa_public_key,
         algorithms=[authorization_settings.token_algorithm],
-        issuer=ACCESS_TOKEN_ISSUER,
+        issuer=authorization_settings.access_token_issuer,
     )
 
 
@@ -29,7 +26,7 @@ def decode_refresh_token(token: str) -> dict:
         jwt=token,
         key=authorization_settings.rsa_public_key,
         algorithms=[authorization_settings.token_algorithm],
-        issuer=REFRESH_TOKEN_ISSUER,
+        issuer=authorization_settings.refresh_token_issuer,
     )
 
 
@@ -38,7 +35,7 @@ def check_refresh_token_issuer(token: str) -> None:
         jwt=token,
         key=authorization_settings.rsa_public_key,
         algorithms=[authorization_settings.token_algorithm],
-        issuer=REFRESH_TOKEN_ISSUER,
+        issuer=authorization_settings.refresh_token_issuer,
         options={"verify_exp": False},
     )
 
@@ -56,7 +53,7 @@ def regenerate_access_token(refresh_token: str) -> dict:
         {
             "user_id": token_data["user_id"],
             "exp": access_token_expires_in,
-            "iss": ACCESS_TOKEN_ISSUER,
+            "iss": authorization_settings.access_token_issuer,
         }
     )
     return {
@@ -90,14 +87,14 @@ def generate_tokens(user_id: str) -> dict:
         {
             "user_id": user_id,
             "exp": access_token_expires_in,
-            "iss": ACCESS_TOKEN_ISSUER
+            "iss": authorization_settings.access_token_issuer
         }
     )
     refresh_token = generate_jwt_token(
         {
             "user_id": user_id,
             "exp": refresh_token_expires_in,
-            "iss": REFRESH_TOKEN_ISSUER,
+            "iss": authorization_settings.refresh_token_issuer,
         }
     )
 

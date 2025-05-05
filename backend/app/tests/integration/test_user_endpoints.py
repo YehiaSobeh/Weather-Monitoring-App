@@ -57,7 +57,7 @@ def test_register_duplicate(monkeypatch):
     resp = client.post(
         "/api/v1/user/register",
         json={"name": "A", "surname": "B", "email": "a@b.com",
-            "password": "pw"},
+              "password": "pw"},
     )
     assert resp.status_code == 400
     assert resp.json() == {"detail": "Email already in use"}
