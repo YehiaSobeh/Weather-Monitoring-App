@@ -28,7 +28,7 @@ class WeatherSettings:
     weather_url: str = "https://api.openweathermap.org/data/2.5"
     redis_host: str = "localhost"
     redis_port: int = "6379"
-    current_weather_cache_ttl: int = 600
+    current_weather_cache_ttl: int = 1800
     forecast_cache_ttl: int = 3600
     rate_limit_count: int = 10
     rate_limit_window: int = 10
