@@ -25,7 +25,7 @@ jobs:
           cd backend
           export PYTHONPATH=$PYTHONPATH:$(pwd)/app
           poetry install
-          poetry run python3 -m coverage run -m pytest tests/ \
+          poetry run python3 -m coverage run -m pytest app/tests/ \
           && poetry run python3 -m coverage report --fail-under=60 -m
         env:
           JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
