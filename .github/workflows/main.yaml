@@ -103,5 +103,3 @@ jobs:
   #       run: pip install poetry
 
   #     - name: Install frontend dependencies
-  #       working-directory: ./frontend
-  #       run: poetry install
