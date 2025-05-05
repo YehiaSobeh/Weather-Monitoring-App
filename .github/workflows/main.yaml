@@ -50,6 +50,9 @@ jobs:
           export PYTHONPATH=$PYTHONPATH:$(pwd)/app
           poetry install
           poetry run python3 -m pytest app/tests/
+        env:
+          JWT_SECRET_KEY: "79cc6b60aaaa71b27a36afd5ddc9a0db"
+
 
       - name: Run backend tests
         working-directory: ./backend
