@@ -49,12 +49,12 @@ def freeze_time(monkeypatch):
 def test_generate_and_decode_access_token_roundtrip():
     payload = {
         "foo": "bar",
-        "iss": security.ACCESS_TOKEN_ISSUER,
+        "iss": authorization_settings.access_token_issuer,
     }
     token = security.generate_jwt_token(payload)
     decoded = security.decode_access_token(token)
     assert decoded["foo"] == "bar"
-    assert decoded["iss"] == security.ACCESS_TOKEN_ISSUER
+    assert decoded["iss"] == authorization_settings.access_token_issuer
 
 
 def test_decode_access_token_wrong_issuer_raises():
@@ -69,7 +69,7 @@ def test_decode_access_token_wrong_issuer_raises():
 
 def test_decode_refresh_token_and_check_issuer():
     rt = jwt.encode(
-        {"user_id": "u1", "iss": security.REFRESH_TOKEN_ISSUER},
+        {"user_id": "u1", "iss": authorization_settings.refresh_token_issuer},
         key="my-secret",
         algorithm="HS256",
     )
@@ -79,7 +79,7 @@ def test_decode_refresh_token_and_check_issuer():
     expired = jwt.encode(
         {
             "user_id": "u2",
-            "iss": security.REFRESH_TOKEN_ISSUER,
+            "iss": authorization_settings.refresh_token_issuer,
             "exp": 1,
         },
         key="my-secret",
@@ -109,12 +109,12 @@ def test_generate_tokens_structure_and_expiry():
 
     at_data = security.decode_access_token(result["access_token"])
     assert at_data["user_id"] == "user42"
-    assert at_data["iss"] == security.ACCESS_TOKEN_ISSUER
+    assert at_data["iss"] == authorization_settings.access_token_issuer
     assert result["expires_in"] == 1577837100
 
     rt_data = security.decode_refresh_token(result["refresh_token"])
     assert rt_data["user_id"] == "user42"
-    assert rt_data["iss"] == security.REFRESH_TOKEN_ISSUER
+    assert rt_data["iss"] == authorization_settings.refresh_token_issuer
     assert result["refresh_token_expires_in"] == 1577923200
 
 
@@ -125,7 +125,7 @@ def test_regenerate_access_token_from_refresh():
     rt = jwt.encode(
         {
             "user_id": "abc",
-            "iss": security.REFRESH_TOKEN_ISSUER,
+            "iss": authorization_settings.refresh_token_issuer,
             "exp": exp_ts,
         },
         key="my-secret",
@@ -137,5 +137,5 @@ def test_regenerate_access_token_from_refresh():
 
     new_data = security.decode_access_token(out["access_token"])
     assert new_data["user_id"] == "abc"
-    assert new_data["iss"] == security.ACCESS_TOKEN_ISSUER
+    assert new_data["iss"] == authorization_settings.access_token_issuer
     assert out["expires_in"] == 1577837100
