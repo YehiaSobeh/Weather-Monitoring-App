@@ -19,7 +19,6 @@ def db_engine():
         db_settings.SQLITE_DATABASE_URL,
         connect_args={"check_same_thread": False},
     )
-
     Base.metadata.create_all(bind=engine)
     yield engine
     Base.metadata.drop_all(bind=engine)
@@ -86,7 +85,18 @@ def subscription_data():
 
 
 @pytest.fixture
-def client():
+def client(db_session):
+    """
+    Bind the TestClient to use our db_session for every request.
+    """
+    # override get_db to yield the db_session
+    def _get_test_db():
+        try:
+            yield db_session
+        finally:
+            pass
+
+    app.dependency_overrides[get_db] = _get_test_db
     return TestClient(app)
 
 

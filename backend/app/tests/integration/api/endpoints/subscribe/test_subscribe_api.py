@@ -1,34 +1,7 @@
-import pytest
-from unittest.mock import patch, MagicMock, create_autospec
-from sqlalchemy.orm import Session
-from fastapi.testclient import TestClient
-
-from main import app
-from api.deps import get_user_id_from_token, get_db
-
-client = TestClient(app)
+from unittest.mock import patch
 
 
-# Dependency overrides
-@pytest.fixture(autouse=True)
-def override_dependencies():
-    def mock_get_user_id():
-        return 1
-
-    def mock_get_db():
-        db = create_autospec(Session)
-        db.add = MagicMock()
-        db.commit = MagicMock()
-        db.refresh = MagicMock()
-        return db
-
-    app.dependency_overrides[get_user_id_from_token] = mock_get_user_id
-    app.dependency_overrides[get_db] = mock_get_db
-    yield
-    app.dependency_overrides.clear()
-
-
-def test_create_subscription_success():
+def test_create_subscription_success(client):
     with patch('services.subscribe.is_subscribed', return_value=False), \
          patch('services.subscribe.send_subscription_email.delay'), \
          patch('crud.user.get_email_by_user_id',
@@ -43,18 +16,21 @@ def test_create_subscription_success():
         assert data["city"] == "Paris"
 
 
-def test_duplicate_subscription():
+def test_duplicate_subscription(client):
     with patch('services.subscribe.is_subscribed',
                side_effect=[False, True]), \
          patch('services.subscribe.send_subscription_email.delay'), \
          patch('crud.user.get_email_by_user_id',
                return_value="test@example.com"):
+        # first request succeeds
         response1 = client.post(
             "/api/v1/subscribe/create",
             json={"city": "London", "temperature_threshold": 15.0},
             headers={"Authorization": "Bearer mock-token"}
         )
         assert response1.status_code == 200
+
+        # second request (same user+city) fails
         response2 = client.post(
             "/api/v1/subscribe/create",
             json={"city": "London", "temperature_threshold": 15.0},
