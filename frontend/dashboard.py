@@ -11,8 +11,10 @@ load_dotenv()
 FASTAPI_BASE = os.getenv("FASTAPI_URL", "http://localhost:8000")
 API_URL = f"{FASTAPI_BASE}/api/v1"
 
+
 def get_auth_headers():
     return {"Authorization": f"Bearer {st.session_state.access_token}"}
+
 
 def display_historical(history_items, days_back):
     st.subheader(f"Historical Data (Last {days_back} Days)")
@@ -40,9 +42,11 @@ def display_historical(history_items, days_back):
                 x="fetched_at",
                 y=metric,
                 title=f"{metric.replace('_', ' ').title()} Trend",
-                labels={ "fetched_at": "Time", metric: metric.replace('_', ' ').title() }
+                labels={"fetched_at": "Time",
+                        metric: metric.replace('_', ' ').title()}
             )
             st.plotly_chart(fig, use_container_width=True)
+
 
 def render_dashboard():
     st.title("Weather Dashboard 🌦️")
@@ -51,7 +55,8 @@ def render_dashboard():
         st.header("Search Weather")
         city = st.text_input("City")
         unit_system = st.radio("Units", ("Metric (°C)", "Imperial (°F)"))
-        params = {"units": "metric" if unit_system.startswith("Metric") else "imperial"}
+        params = {"units": "metric" if unit_system.startswith("Metric") else
+                  "imperial"}
         days_back = st.slider("Historical Days", 1, 90, 30)
 
         if st.button("Get Weather"):
@@ -68,7 +73,8 @@ def render_dashboard():
                     cur_resp.raise_for_status()
                     raw = cur_resp.json()
 
-                    # Flatten both OpenWeatherMap‐style payloads or your flat schema
+                    # Flatten both OpenWeatherMap‐style payloads
+                    #  or your flat schema
                     if "main" in raw:
                         current = {
                             "city": raw.get("name", city),
@@ -110,7 +116,9 @@ def render_dashboard():
 
     # Display every historical chart
     if "history" in st.session_state:
-        display_historical(st.session_state.history, st.session_state.days_back)
+        display_historical(st.session_state.history,
+                           st.session_state.days_back)
+
 
 def subscribe_page():
     st.title("Subscribe to Alerts")
@@ -133,6 +141,7 @@ def subscribe_page():
                     st.success("Subscribed successfully!")
                 except requests.exceptions.HTTPError as e:
                     st.error(f"Subscription failed: {e.response.text}")
+
 
 def main():
     if "authenticated" not in st.session_state:
@@ -165,6 +174,6 @@ def main():
     else:
         subscribe_page()
 
+
 if __name__ == "__main__":
     main()
-
