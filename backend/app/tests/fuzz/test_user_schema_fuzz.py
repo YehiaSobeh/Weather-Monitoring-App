@@ -1,9 +1,8 @@
 import pytest
+from hypothesis import given, strategies as st
+from app.schemas.user import UserCreate
 
 hyp = pytest.importorskip("hypothesis", reason="hypothesis not installed")
-from hypothesis import given, strategies as st
-
-from app.schemas.user import UserCreate
 
 
 email_st = st.emails()
@@ -15,5 +14,5 @@ def test_user_create_never_crashes(name, email):
     try:
         UserCreate(name=name, email=email)
     except Exception as exc:
-        
+
         assert exc.__class__.__name__ in {"ValidationError"}

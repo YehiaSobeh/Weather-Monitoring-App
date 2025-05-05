@@ -12,7 +12,7 @@ class AuthorizationSettings:
     token_algorithm: str = config("TOKEN_ALGORITHM", default="RS256")
     _raw_pub = config("RSA_PUBLIC_KEY")
     _raw_priv = config("RSA_PRIVATE_KEY")
-    access_token_issuer = config("ACCESS_TOKEN_ISSUER", 
+    access_token_issuer = config("ACCESS_TOKEN_ISSUER",
                                  default="backend:access-token")
     refresh_token_issuer = config("REFRESH_TOKEN_ISSUER",
                                   default="backend:refresh-token")

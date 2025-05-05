@@ -5,7 +5,9 @@ try:
     from selenium.webdriver.common.by import By
     from selenium.webdriver.chrome.options import Options
 except ImportError:
-    pytest.skip("Selenium not installed; skipping UI tests", allow_module_level=True)
+    pytest.skip("Selenium not installed; skipping UI tests",
+                allow_module_level=True)
+
 
 @pytest.fixture(scope="module")
 def browser():
@@ -14,6 +16,7 @@ def browser():
     driver = webdriver.Chrome(options=opts)
     yield driver
     driver.quit()
+
 
 def test_subscription_form_submit(browser, live_server):
     url = f"{live_server.url}/subscribe"

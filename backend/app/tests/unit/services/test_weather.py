@@ -11,9 +11,9 @@ from core.config import weather_settings
 from utils.weather import send_request
 
 from fastapi import HTTPException
-from unittest.mock import Mock, patch
-from api.deps import get_db
+from unittest.mock import Mock
 from app.api.endpoints.weather import get_weather_history
+
 
 @pytest.mark.asyncio
 async def test_send_request_success():
@@ -100,17 +100,20 @@ async def test_get_weather_history_with_records():
         {"city": "Kazan", "temperature": -30.0, "fetched_at": "2025-05-01"}
     ]
     mock_crud = Mock(return_value=mock_records)
-    
+
     # Mock dependencies (db, user_id)
     mock_db = Mock()
     mock_user_id = "user123"
-    
-    with patch("app.api.endpoints.weather.weather_crud.get_weather_history", mock_crud):
-        response = await get_weather_history("Kazan", db=mock_db, user_id=mock_user_id)
-        
+
+    with patch("app.api.endpoints.weather.weather_crud.get_weather_history",
+               mock_crud):
+        response = await get_weather_history("Kazan", db=mock_db,
+                                             user_id=mock_user_id)
+
         # Assert the response matches the mock data
         assert len(response) == 1
         assert response[0]["city"] == "Kazan"
+
 
 @pytest.mark.asyncio
 async def test_get_weather_history_no_records():
@@ -118,9 +121,11 @@ async def test_get_weather_history_no_records():
     mock_crud = Mock(return_value=[])
     mock_db = Mock()
     mock_user_id = "user123"
-    
-    with patch("app.api.endpoints.weather.weather_crud.get_weather_history", mock_crud):
+
+    with patch("app.api.endpoints.weather.weather_crud.get_weather_history",
+               mock_crud):
         # Expect HTTP 404 when no records exist
         with pytest.raises(HTTPException) as exc_info:
-            await get_weather_history("InvalidCity", db=mock_db, user_id=mock_user_id)
+            await get_weather_history("InvalidCity", db=mock_db,
+                                      user_id=mock_user_id)
         assert exc_info.value.status_code == 404
