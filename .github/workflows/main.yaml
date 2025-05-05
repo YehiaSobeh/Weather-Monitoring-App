@@ -1,0 +1,69 @@
+# on: push
+
+# jobs:
+#   test:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - uses: actions/setup-python@v4
+#         with:
+#           python-version: '3.11'
+#       - name: Run image
+#         uses: abatilo/actions-poetry@v2
+#         with:
+#           poetry-version: '2.1.1'
+#       - name: Install dependencies
+#         run: poetry install
+#       - name: Run pytest
+#         run: poetry run pytest --cov=app --cov-report=term --cov-fail-under=60 --cov-branch backend/app/tests
+#       - name: Run flake8 with maximum complexity of 10
+#         run: poetry run flake8 --max-complexity 10 backend/app
+#       - name: Run bandit
+#         run: poetry run bandit -r backend/app/
+
+
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run image
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: '2.1.1'
+
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: poetry install
+
+      - name: Run backend tests
+        working-directory: ./backend
+        run: poetry run pytest app/tests/
+
+      - name: Run backend tests
+        working-directory: ./backend
+        run: poetry run flake8
+        
+
+  # frontend:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-python@v5
+  #       with:
+  #         python-version: "3.11"
+
+  #     - name: Install Poetry
+  #       run: pip install poetry
+
+  #     - name: Install frontend dependencies
+  #       working-directory: ./frontend
+  #       run: poetry install
