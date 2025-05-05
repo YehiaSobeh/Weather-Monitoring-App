@@ -48,7 +48,12 @@ jobs:
 
       - name: Run bandit
         working-directory: ./backend
-        run: poetry run python3 -m bandit -r app/
+        run: poetry run python3 -m bandit -r app/ -c bandit.yml
+
+      - name: Check cyclomatic complexity
+        working-directory: ./backend
+        run: poetry run python3 -m radon cc -n A -s -a backend/app
+
 
   frontend:
     runs-on: ubuntu-latest
