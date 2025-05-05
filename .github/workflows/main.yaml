@@ -1,28 +1,4 @@
-# on: push
-
-# jobs:
-#   test:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@v4
-#       - uses: actions/setup-python@v4
-#         with:
-#           python-version: '3.11'
-#       - name: Run image
-#         uses: abatilo/actions-poetry@v2
-#         with:
-#           poetry-version: '2.1.1'
-#       - name: Install dependencies
-#         run: poetry install
-#       - name: Run pytest
-#         run: poetry run pytest --cov=app --cov-report=term --cov-fail-under=60 --cov-branch backend/app/tests
-#       - name: Run flake8 with maximum complexity of 10
-#         run: poetry run flake8 --max-complexity 10 backend/app
-#       - name: Run bandit
-#         run: poetry run bandit -r backend/app/
-
-
-name: CI
+name: CI Pipeline
 
 on: [push, pull_request]
 
@@ -44,12 +20,13 @@ jobs:
         working-directory: ./backend
         run: poetry install --no-interaction
 
-      - name: Run tests
+      - name: Run tests and check coverage is above 60%
         run: |
           cd backend
           export PYTHONPATH=$PYTHONPATH:$(pwd)/app
           poetry install
-          poetry run python3 -m pytest app/tests/
+          poetry run python3 -m coverage run -m pytest tests/ \
+          && poetry run python3 -m coverage report --fail-under=60 -m
         env:
           JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
           TOKEN_ALGORITHM: ${{ secrets.TOKEN_ALGORITHM }}
@@ -65,9 +42,13 @@ jobs:
           MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
           MAIL_PORT: ${{ secrets.MAIL_PORT }}
 
-      - name: Run backend tests
+      - name: Check backend lint
         working-directory: ./backend
         run: poetry run python3 -m flake8
+
+      - name: Run bandit
+        working-directory: ./backend
+        run: poetry run python3 -m bandit -r app/
 
   frontend:
     runs-on: ubuntu-latest
@@ -82,24 +63,12 @@ jobs:
         with:
           poetry-version: '2.1.1'
 
-      - name: Install backend dependencies
+      - name: Install frontend dependencies
         working-directory: ./frontend
         run: poetry install --no-root
 
-      - name: Run backend tests
+      - name: Check frontend lint
         working-directory: ./frontend
         run: poetry run python3 -m flake8
         
-
-  # frontend:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: actions/setup-python@v5
-  #       with:
-  #         python-version: "3.11"
-
-  #     - name: Install Poetry
-  #       run: pip install poetry
-
-  #     - name: Install frontend dependencies
+# poetry run python3 -m pytest app/tests/
