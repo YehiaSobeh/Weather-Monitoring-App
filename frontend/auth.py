@@ -8,7 +8,6 @@ load_dotenv()
 FASTAPI_BASE = os.getenv("FASTAPI_URL", "http://localhost:8000")
 API_URL = f"{FASTAPI_BASE}/api/v1"
 
-
 def login_page():
     st.title("Weather Dashboard Login")
 
@@ -32,7 +31,6 @@ def login_page():
             except requests.exceptions.HTTPError:
                 st.error("Invalid credentials")
 
-
 def register_page():
     st.title("Register New Account")
 
@@ -51,13 +49,13 @@ def register_page():
             try:
                 response = requests.post(
                     f"{API_URL}/user/register",
-                    json={"name": name, "surname": surname, "email": email,
-                          "password": password}
+                    json={"name": name, "surname": surname, "email": email, "password": password}
                 )
                 response.raise_for_status()
-                st.success("Registration successful! Please login.")
                 st.session_state.show_login = True
+                st.success("Registration successful! Redirecting to login...")
+                st.rerun()
             except requests.exceptions.HTTPError as e:
-                error_detail = e.response.json().get("detail",
-                                                     "Registration failed")
+                error_detail = e.response.json().get("detail", "Registration failed")
                 st.error(f"Error: {error_detail}")
+
