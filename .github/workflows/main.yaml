@@ -76,4 +76,3 @@ jobs:
         working-directory: ./frontend
         run: poetry run python3 -m flake8
         
-# poetry run python3 -m pytest app/tests/
