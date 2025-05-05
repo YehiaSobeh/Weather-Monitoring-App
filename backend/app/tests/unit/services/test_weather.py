@@ -1,5 +1,5 @@
 import json
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock
 
 import httpx
 import pytest
@@ -11,7 +11,7 @@ from core.config import weather_settings
 from utils.weather import send_request
 
 from fastapi import HTTPException
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 from app.api.endpoints.weather import get_weather_history
 
 
