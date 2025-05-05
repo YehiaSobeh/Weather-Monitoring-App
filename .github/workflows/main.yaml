@@ -44,9 +44,10 @@ jobs:
         working-directory: ./backend
         run: poetry install --no-interaction
 
-      - name: Run backend tests
-        working-directory: ./backend
-        run: poetry run python3 -m  pytest app/tests/
+      - name: Run tests
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)/backend/app
+          poetry run python3 -m pytest app/tests/
 
       - name: Run backend tests
         working-directory: ./backend
