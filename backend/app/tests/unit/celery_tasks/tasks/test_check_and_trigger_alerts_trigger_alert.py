@@ -44,11 +44,11 @@ def test_check_and_trigger_alerts_trigger_alert(monkeypatch, dummy_query):
     check_and_trigger_alerts(db)
 
     # Verify DB had an Alert added & committed
+    assert weather.temperature >= sub.temperature_threshold
     assert db.add.called
     added: Alert = db.add.call_args[0][0]
     assert added.subscription_id == 1
     assert added.actual_temperature == 18
-
     # And the notification was enqueued
     assert email_call['email'] == MY_EMAIL
     assert email_call['city'] == MY_CITY

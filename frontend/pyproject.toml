@@ -5,6 +5,8 @@ description = ""
 authors = [
     {name = "saleemasekrea000",email = "s.asekrea@innopolis.university"}
 ]
+package-mode = false
+
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [

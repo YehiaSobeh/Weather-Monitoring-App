@@ -1,2 +1,7 @@
-dev:
-	poetry run streamlit run dashboard.py
+.PHONY: dev install
+
+install:
+	poetry install --no-root
+
+dev: install
+	poetry run streamlit run dashboard.py 
