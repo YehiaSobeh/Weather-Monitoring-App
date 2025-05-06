@@ -65,7 +65,7 @@ def render_current_weather():
                         f"{API_URL}/weather/current/{city}",
                         headers=get_auth_headers(),
                         params=params,
-                        timeout=0
+                        timeout=5
                     )
                     cur_resp.raise_for_status()
                     raw = cur_resp.json()
