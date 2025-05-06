@@ -102,7 +102,7 @@ jobs:
 
       - name: Run bandit
         working-directory: ./frontend
-        run: poetry run python3 -m bandit -r .
+        run: poetry run python3 -m bandit -r -c bandit.yml
 
       - name: Check cyclomatic complexity
         working-directory: ./frontend
