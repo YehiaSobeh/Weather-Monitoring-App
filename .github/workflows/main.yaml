@@ -78,22 +78,6 @@ jobs:
           poetry run python3 -m mutmut run --paths-to-mutate app/crud/subscribe.py --runner="pytest app/tests/unit/crud -q"
           poetry run python3 -m mutmut run --paths-to-mutate app/core/security.py --runner="pytest app/tests/unit/core/security -q"
           poetry run python3 -m mutmut run --paths-to-mutate app/celery_tasks/tasks.py --runner="pytest app/tests/unit/celery_tasks/ -q"
-      
-      # - name: Start backend server
-      #   working-directory: ./backend
-      #   run: |
-      #     make dev
-      #     sleep 5
-      
-      # - name: Run locust performance check 
-      #   working-directory: ./frontend
-      #   run: poetry run locust -f locustfile.py \
-      #         --headless \
-      #         -u 1 \
-      #         -r 1 \
-      #         --run-time 1m \
-      #         --csv=load_test_report \
-      #         --host http://localhost:8000
 
   frontend:
     runs-on: ubuntu-latest
