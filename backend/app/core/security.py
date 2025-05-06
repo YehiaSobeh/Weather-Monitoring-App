@@ -52,7 +52,7 @@ def regenerate_access_token(refresh_token: str) -> dict:
     access_token = generate_jwt_token(
         {
             "user_id": token_data["user_id"],
-            "exp": access_token_expires_in,
+            "exp": access_token_expires_in,  # pragma: no mutate
             "iss": authorization_settings.access_token_issuer,
         }
     )
@@ -86,14 +86,14 @@ def generate_tokens(user_id: str) -> dict:
     access_token = generate_jwt_token(
         {
             "user_id": user_id,
-            "exp": access_token_expires_in,
+            "exp": access_token_expires_in,  # pragma: no mutate
             "iss": authorization_settings.access_token_issuer
         }
     )
     refresh_token = generate_jwt_token(
         {
             "user_id": user_id,
-            "exp": refresh_token_expires_in,
+            "exp": refresh_token_expires_in,  # pragma: no mutate
             "iss": authorization_settings.refresh_token_issuer,
         }
     )

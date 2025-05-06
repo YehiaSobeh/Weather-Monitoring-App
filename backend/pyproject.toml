@@ -45,3 +45,8 @@ trio = "^0.30.0"
 flake8 = "^7.2.0"
 bandit = "^1.8.3"
 radon = "^6.0.1"
+mutmut = "2.4.4"
+
+[tool.mutmut]
+do_not_mutate  = "app/tests/**/*"
+tests_dir = "app/tests"

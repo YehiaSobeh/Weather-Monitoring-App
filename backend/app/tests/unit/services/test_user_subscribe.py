@@ -17,7 +17,7 @@ def test_user_subscribe_already_subscribed():
                            user_id=1)
 
         assert exc.value.status_code == 400
-        assert "already has a subscription" in str(exc.value.detail)
+        assert "User already has a subscription." == str(exc.value.detail)
 
 
 def test_user_subscribe_success():
