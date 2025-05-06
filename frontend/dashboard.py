@@ -65,6 +65,7 @@ def render_current_weather():
                         f"{API_URL}/weather/current/{city}",
                         headers=get_auth_headers(),
                         params=params,
+                        timeout=0
                     )
                     cur_resp.raise_for_status()
                     raw = cur_resp.json()
@@ -112,7 +113,8 @@ def render_historical_weather():
                 try:
                     hist_resp = requests.get(
                         f"{API_URL}/weather/history/{city}",
-                        headers=get_auth_headers()
+                        headers=get_auth_headers(),
+                        timeout=10
                     )
                     hist_resp.raise_for_status()
                     history = hist_resp.json()
@@ -145,6 +147,7 @@ def subscribe_page():
                             "city": city,
                             "temperature_threshold": threshold
                         },
+                        timeout=10
                     )
                     resp.raise_for_status()
                     st.success("Subscribed successfully!")
