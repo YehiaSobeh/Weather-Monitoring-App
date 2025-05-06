@@ -31,7 +31,7 @@ class WeatherSettings:
     current_weather_cache_ttl: int = 1800
     forecast_cache_ttl: int = 3600
     rate_limit_count: int = 10
-    rate_limit_window: int = 10
+    rate_limit_window: int = 60
 
 
 class MailSettings:
