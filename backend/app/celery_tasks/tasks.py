@@ -139,7 +139,8 @@ def check_and_trigger_alerts(db: Session) -> None:
                     user_email,
                     sub.city,
                     {
-                        "temperature": weather.temperature,  # pragma: no mutate # noqa: E501
+                        "temperature": weather.temp
+                        erature,  # pragma: no mutate # noqa: E501
                         "threshold": sub.temperature_threshold,  # pragma: no mutate # noqa: E501
                     },
                 )
