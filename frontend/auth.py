@@ -20,7 +20,8 @@ def login_page():
             try:
                 response = requests.post(
                     f"{API_URL}/user/login",
-                    json={"email": email, "password": password}
+                    json={"email": email, "password": password},
+                    timeout=10,
                 )
                 response.raise_for_status()
 
@@ -57,6 +58,8 @@ def register_page():
                         "email": email,
                         "password": password,
                     },
+                    timeout=10,
+
                 )
                 response.raise_for_status()
                 st.session_state.show_login = True

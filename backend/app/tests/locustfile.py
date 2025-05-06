@@ -1,5 +1,6 @@
 from locust import HttpUser, task, between
 from random import randint
+import time
 
 
 class FastAPIUser(HttpUser):
@@ -47,9 +48,10 @@ class FastAPIUser(HttpUser):
 
     @task
     def load_dashboard(self):
-        city = "Kazan"
+        city = "kazan"
         params = {"units": "metric"}
 
+        # Fetch current weather
         with self.client.get(
             f"/api/v1/weather/current/{city}",
             params=params,
@@ -67,18 +69,41 @@ class FastAPIUser(HttpUser):
                     f"Status code: {response.status_code}"
                 )
 
+        # Fetch weather history
         with self.client.get(
             f"/api/v1/weather/history/{city}",
+            headers={
+                "Authorization":
+                f"Bearer {self.client.headers['Authorization'].split()[1]}",
+                "Accept": "application/json"
+            },
             catch_response=True
         ) as response:
             if response.status_code == 200:
-                if len(response.json()) == 0:
-                    response.failure("No historical data received")
-                elif response.elapsed.total_seconds() > 3:
-                    response.failure(
-                        f"Fetching weather history took too long: "
-                        f"{response.elapsed.total_seconds()} seconds"
-                    )
+                try:
+                    data = response.json()
+                    if len(data) == 0:
+                        response.failure("No historical data received")
+                    elif response.elapsed.total_seconds() > 3:
+                        response.failure(
+                            f"Fetching weather history took too long: "
+                            f"{response.elapsed.total_seconds()} seconds"
+                        )
+                    else:
+                        required_keys = {
+                            "city", "temperature", "humidity",
+                            "wind_speed", "pressure",
+                            "fetched_at", "updated_at"
+                        }
+                        for record in data:
+                            if not required_keys.issubset(record):
+                                response.failure(
+                                    "Incomplete weather data structure")
+                                break
+                        else:
+                            response.success()
+                except Exception as e:
+                    response.failure(f"Error parsing JSON: {e}")
             else:
                 response.failure(
                     f"Failed to fetch weather history for {city}. "
@@ -87,12 +112,21 @@ class FastAPIUser(HttpUser):
 
     @task
     def subscribe_to_alerts(self):
-        with self.client.get(
+        time.sleep(1)  # simulate user thinking before subscribing
+        payload = {
+            "city": "kazan",
+            "temperature_threshold": 0
+        }
+
+        with self.client.post(
             "/api/v1/subscribe/create",
+            json=payload,
             catch_response=True
         ) as response:
             if response.status_code != 200:
                 response.failure(
-                    "Failed to load subscribe page. "
-                    f"Status code: {response.status_code}"
+                    f"Subscription failed. Status code: "
+                    f"{response.status_code}, Response: {response.text}"
                 )
+            else:
+                time.sleep(1)

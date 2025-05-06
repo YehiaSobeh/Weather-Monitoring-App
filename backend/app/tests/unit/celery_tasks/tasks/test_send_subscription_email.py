@@ -24,5 +24,9 @@ def test_send_subscription_email(monkeypatch):
     # Verify the mail was “sent” with the right data
     assert sent['email'] == MY_EMAIL
     assert sent['subject'] == "Welcome to our Weather Alert System!"
-    assert MY_CITY in sent['body']
+    body = (
+        "Thank you for subscribing to Weather Alerts! "
+        f"You will now receive weather alerts for {MY_CITY}."
+    )
+    assert body == sent['body']
     assert result == "Email sent successfully!"
