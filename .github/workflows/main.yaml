@@ -54,6 +54,30 @@ jobs:
         working-directory: ./backend
         run: poetry run python3 -m radon cc -n A -s -a backend/app
 
+      - name: Perform mutation testing
+        working-directory: ./backend
+        env:
+          PYTHONPATH: ${{ github.workspace }}/backend/app
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          TOKEN_ALGORITHM: ${{ secrets.TOKEN_ALGORITHM }}
+          RSA_PUBLIC_KEY: ${{ secrets.RSA_PUBLIC_KEY }}
+          RSA_PRIVATE_KEY: ${{ secrets.RSA_PRIVATE_KEY }}
+          ACCESS_TOKEN_EXPIRES_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRES_MINUTES }}
+          REFRESH_TOKEN_EXPIRES_DAYS: ${{ secrets.REFRESH_TOKEN_EXPIRES_DAYS }}
+          WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
+          REDIS_HOST: ${{ secrets.REDIS_HOST }}
+          REDIS_PORT: ${{ secrets.REDIS_PORT }}
+          MAIL_HOST: ${{ secrets.MAIL_HOST }}
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          MAIL_PORT: ${{ secrets.MAIL_PORT }}
+        run: |
+          poetry run python3 -m mutmut run --paths-to-mutate app/services/weather.py --runner="pytest app/tests/unit/services/test_weather.py -q"
+          poetry run python3 -m mutmut run --paths-to-mutate app/utils --runner="pytest app/tests/unit/utils -q"
+          poetry run python3 -m mutmut run --paths-to-mutate app/services/user.py --runner="pytest app/tests/unit/services/user -q"
+          poetry run python3 -m mutmut run --paths-to-mutate app/crud/subscribe.py --runner="pytest app/tests/unit/crud -q"
+          poetry run python3 -m mutmut run --paths-to-mutate app/core/security.py --runner="pytest app/tests/unit/core/security -q"
+          poetry run python3 -m mutmut run --paths-to-mutate app/celery_tasks/tasks.py --runner="pytest app/tests/unit/celery_tasks/ -q"
 
   frontend:
     runs-on: ubuntu-latest
@@ -75,4 +99,12 @@ jobs:
       - name: Check frontend lint
         working-directory: ./frontend
         run: poetry run python3 -m flake8
+
+      - name: Run bandit
+        working-directory: ./frontend
+        run: poetry run python3 -m bandit -r . -c bandit.yml
+
+      - name: Check cyclomatic complexity
+        working-directory: ./frontend
+        run: poetry run python3 -m radon cc -n A -s -a .
         
