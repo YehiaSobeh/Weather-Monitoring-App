@@ -1,14 +1,12 @@
 import pytest
 import requests
 import datetime as _dt
-from types import SimpleNamespace
 from unittest.mock import Mock, call
 from frontend import dashboard
 import pandas as pd
 
 
 class DotDict(dict):
-    """dict with attribute access for Streamlit-style session_state and membership checks."""
     __getattr__ = dict.get
 
     def __setattr__(self, name, value):
@@ -17,7 +15,6 @@ class DotDict(dict):
 
 @pytest.fixture
 def mock_st(mocker):
-    """Swap out Streamlit inside frontend.dashboard with a MagicMock backed by DotDict state."""
     mock_st = mocker.MagicMock()
     mock_st.session_state = DotDict()
     mocker.patch.object(dashboard, "st", mock_st)
@@ -26,7 +23,8 @@ def mock_st(mocker):
 
 def test_get_auth_headers(mock_st):
     mock_st.session_state.access_token = "test_token"
-    assert dashboard.get_auth_headers() == {"Authorization": "Bearer test_token"}
+    assert dashboard.get_auth_headers() == {
+        "Authorization": "Bearer test_token"}
 
 
 def test_display_historical_no_data(mock_st):

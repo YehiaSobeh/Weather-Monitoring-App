@@ -1,12 +1,11 @@
 import pytest
 import requests
-from types import SimpleNamespace
 from unittest.mock import Mock
 from frontend import auth
 
 
 class DotDict(dict):
-    """dict ⇄ attribute access & key‑membership compatibility."""
+    """Dict with attribute access and key membership compatibility."""
     __getattr__ = dict.get
 
     def __setattr__(self, name, value):
@@ -15,7 +14,6 @@ class DotDict(dict):
 
 @pytest.fixture
 def mock_st(mocker):
-    """Mock Streamlit inside frontend.auth and give it a dict‑like session_state."""
     mock_st = mocker.MagicMock()
     mock_st.session_state = DotDict()
     mocker.patch.object(auth, "st", mock_st)
@@ -58,7 +56,9 @@ def test_login_http_error(mocker, mock_st):
 
 def test_register_password_mismatch(mocker, mock_st):
     mock_st.form_submit_button.return_value = True
-    mock_st.text_input.side_effect = ["John", "Doe", "test@ex.com", "pass", "nopass"]
+    mock_st.text_input.side_effect = [
+        "John", "Doe", "test@ex.com", "pass", "nopass"
+    ]
     mock_st.error = Mock()
 
     auth.register_page()
@@ -71,17 +71,25 @@ def test_register_success(mocker, mock_st):
     mock_post.return_value.raise_for_status.return_value = None
 
     mock_st.form_submit_button.return_value = True
-    mock_st.text_input.side_effect = ["John", "Doe", "test@ex.com", "pass", "pass"]
+    mock_st.text_input.side_effect = [
+        "John", "Doe", "test@ex.com", "pass", "pass"
+    ]
     mock_st.success = Mock()
 
     auth.register_page()
 
     mock_post.assert_called_once_with(
         f"{auth.API_URL}/user/register",
-        json={"name": "John", "surname": "Doe", "email": "test@ex.com", "password": "pass"},
+        json={
+            "name": "John",
+            "surname": "Doe",
+            "email": "test@ex.com",
+            "password": "pass"
+        },
     )
-    # Updated message to match implementation
-    mock_st.success.assert_called_once_with("Registration successful! Redirecting to login...")
+    mock_st.success.assert_called_once_with(
+        "Registration successful! Redirecting to login..."
+    )
     assert mock_st.session_state.show_login is True
 
 
@@ -92,7 +100,9 @@ def test_register_api_error(mocker, mock_st):
     mock_post.side_effect = requests.exceptions.HTTPError(response=mock_resp)
 
     mock_st.form_submit_button.return_value = True
-    mock_st.text_input.side_effect = ["John", "Doe", "test@ex.com", "pass", "pass"]
+    mock_st.text_input.side_effect = [
+        "John", "Doe", "test@ex.com", "pass", "pass"
+    ]
     mock_st.error = Mock()
 
     auth.register_page()
