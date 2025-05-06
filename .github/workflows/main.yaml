@@ -79,8 +79,6 @@ jobs:
           poetry run python3 -m mutmut run --paths-to-mutate app/core/security.py --runner="pytest app/tests/unit/core/security -q"
           poetry run python3 -m mutmut run --paths-to-mutate app/celery_tasks/tasks.py --runner="pytest app/tests/unit/celery_tasks/ -q"
 
-
-
   frontend:
     runs-on: ubuntu-latest
     steps:
