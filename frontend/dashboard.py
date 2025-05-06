@@ -17,7 +17,7 @@ def get_auth_headers():
     return {"Authorization": f"Bearer {st.session_state.access_token}"}
 
 
-def display_historical(history_items, days_back):
+def display_historical(history_items, days_back=30):
     st.subheader(f"Historical Data (Last {days_back} Days)")
     if not history_items:
         st.warning("No historical data available")
@@ -54,12 +54,7 @@ def render_current_weather():
     with st.sidebar:
         st.header("Search Weather")
         city = st.text_input("City")
-        unit_system = st.radio("Units", ("Metric (°C)", "Imperial (°F)"))
-        params = {
-            "units": "metric"
-            if unit_system.startswith("Metric")
-            else "imperial"
-        }
+        params = {"units": "metric"}  # Celsius only
 
         if st.button("Get Current Weather"):
             if not city:
@@ -95,7 +90,7 @@ def render_current_weather():
         st.subheader(f"Current Weather in {current.get('city', '')}")
         try:
             cols = st.columns(3)
-            cols[0].metric("Temperature", f"{current['temperature']}°")
+            cols[0].metric("Temperature", f"{current['temperature']}°C")
             cols[1].metric("Humidity", f"{current['humidity']}%")
             cols[2].metric("Wind Speed", f"{current['wind_speed']} m/s")
         except KeyError:
@@ -109,7 +104,6 @@ def render_historical_weather():
     with st.sidebar:
         st.header("Historical Weather Settings")
         city = st.text_input("City", key="hist_city")
-        days_back = st.slider("Days Back", 1, 90, 30)
 
         if st.button("Get Historical Weather"):
             if not city:
@@ -124,16 +118,12 @@ def render_historical_weather():
                     history = hist_resp.json()
 
                     st.session_state.history = history
-                    st.session_state.days_back = days_back
 
                 except requests.exceptions.HTTPError as e:
                     st.error(f"Error fetching history data: {e.response.text}")
 
     if "history" in st.session_state:
-        display_historical(
-            st.session_state.history,
-            st.session_state.days_back
-        )
+        display_historical(st.session_state.history)
 
 
 def subscribe_page():
