@@ -85,7 +85,7 @@ jobs:
       #     make dev
       #     sleep 5
       
-      # - name: Run locust performance check
+      # - name: Run locust performance check 
       #   working-directory: ./frontend
       #   run: poetry run locust -f locustfile.py \
       #         --headless \
