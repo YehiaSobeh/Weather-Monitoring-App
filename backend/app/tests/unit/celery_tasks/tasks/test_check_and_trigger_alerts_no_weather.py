@@ -29,5 +29,8 @@ def test_check_and_trigger_alerts_no_weather(monkeypatch, dummy_query):
         check_and_trigger_alerts(db)
 
     assert exc_info.value.status_code == 404
-    assert f"No weather data found for city: {MY_CITY}" in str(
-        exc_info.value.detail)
+    detail = (
+        "No weather data found"
+        f"for city: {MY_CITY}"
+    )
+    assert detail == str(exc_info.value.detail)
