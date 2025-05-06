@@ -16,7 +16,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-@app.task(name="send_subscription_email")
+@app.task(name="send_subscription_email")  # pragma: no mutate
 def send_subscription_email(user_email: str, city: str):
     subject = "Welcome to our Weather Alert System!"
     body = (
@@ -28,7 +28,7 @@ def send_subscription_email(user_email: str, city: str):
     return "Email sent successfully!"
 
 
-@app.task(name="send_weather_alert_email")
+@app.task(name="send_weather_alert_email")  # pragma: no mutate
 def send_weather_alert_email(user_email: str, city: str, payload: dict):
     """
     Sends an alert email when a subscription’s
@@ -46,7 +46,7 @@ def send_weather_alert_email(user_email: str, city: str, payload: dict):
     return f"Alert email sent to {user_email} for {city}"
 
 
-@app.task(name="update_weather_data")
+@app.task(name="update_weather_data")  # pragma: no mutate
 def update_weather_data(city: str):
     """
     Updates weather data for a given city and
@@ -67,7 +67,7 @@ def update_weather_data(city: str):
     print(f"Updated weather data for {city}")
 
 
-@app.task(name="update_all_weather_data")
+@app.task(name="update_all_weather_data")  # pragma: no mutate
 def update_all_weather_data():
     """
     Updates weather data for all subscribed cities.

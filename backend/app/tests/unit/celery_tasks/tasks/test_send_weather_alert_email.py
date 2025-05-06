@@ -21,8 +21,13 @@ def test_send_weather_alert_email(monkeypatch):
     result = tasks.send_weather_alert_email(MY_EMAIL, MY_CITY, payload)
 
     assert sent['email'] == MY_EMAIL
+    body = (
+        f"Dear User,\n\n"
+        f"The temperature in {MY_CITY} is now {payload['temperature']}°C, "
+        f"which exceeds your threshold of {payload['threshold']}°C.\n\n"
+        f"Stay safe!\n\n"
+        f"— Weather Alert System"
+    )
     assert f"⚠ Weather Alert for {MY_CITY}!" == sent['subject']
-    assert "30°C" in sent['body']
-    assert "25°C" in sent['body']
-    assert "Stay safe" in sent['body']
+    assert body == sent['body']
     assert result == f"Alert email sent to {MY_EMAIL} for {MY_CITY}"
