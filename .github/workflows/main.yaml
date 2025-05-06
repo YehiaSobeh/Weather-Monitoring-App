@@ -7,22 +7,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
 
-      - name: Run image
+      - name: Set up Python & Poetry
         uses: abatilo/actions-poetry@v2
         with:
           poetry-version: '2.1.1'
 
+      # install your project deps
       - name: Install backend dependencies
         working-directory: ./backend
         run: poetry install --no-interaction
 
-    ##
+      # add the export plugin so 'poetry export' works
+      - name: Add poetry-export plugin
+        run: poetry self add poetry-plugin-export
 
-      - name: Install Node.js (for Snyk CLI)
+      # set up Node.js so we can install the Snyk CLI
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -30,16 +31,18 @@ jobs:
       - name: Install Snyk CLI
         run: npm install -g snyk
 
+      # export a requirements.txt for Snyk
       - name: Export dependencies
         working-directory: ./backend
         run: poetry export -f requirements.txt --without-hashes > requirements.txt
 
+      # run the Snyk dependency scan
       - name: Run Snyk dependency scan
-        run: snyk test --file=requirements.txt --package-manager=pip --project-name=weather-monitoring-backend
+        working-directory: ./backend
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      
-      ##
+        run: snyk test --file=requirements.txt --package-manager=pip \
+                       --project-name=weather-monitoring-backend
 
       - name: Run tests and check coverage is above 60%
         run: |
