@@ -105,9 +105,9 @@ The application will be available at [localhost:8000](http://localhost:8000/)
 
 ### Database
 
-- The system uses a Relational Database (PostgreSQL) to store user data, alerts, weather data, etc.
+- The system uses a Relational Database (SQLite) to store user data, alerts, weather data, etc.
 
-- created indexes on key columns in the database to optimize query performance, especially for frequently accessed data (`city_name`, `is_active`, `sub_id`, `email` )
+- created indexes on key columns in the database to optimize query performance, especially for frequently accessed data 
 
 - For the full database schema, refer to [Database Schema](https://dbdiagram.io/d/67b355f0263d6cf9a072e3dc).
 
