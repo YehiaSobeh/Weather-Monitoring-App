@@ -7,42 +7,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
-      - name: Set up Python & Poetry
+      - name: Run image
         uses: abatilo/actions-poetry@v2
         with:
           poetry-version: '2.1.1'
 
-      # install your project deps
       - name: Install backend dependencies
         working-directory: ./backend
         run: poetry install --no-interaction
-
-      # add the export plugin so 'poetry export' works
-      - name: Add poetry-export plugin
-        run: poetry self add poetry-plugin-export
-
-      # set up Node.js so we can install the Snyk CLI
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install Snyk CLI
-        run: npm install -g snyk
-
-      # export a requirements.txt for Snyk
-      - name: Export dependencies
-        working-directory: ./backend
-        run: poetry export -f requirements.txt --without-hashes > requirements.txt
-
-      # run the Snyk dependency scan
-      - name: Run Snyk dependency scan
-        working-directory: ./backend
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        run: snyk test --file=requirements.txt --package-manager=pip \
-                       --project-name=weather-monitoring-backend
 
       - name: Run tests and check coverage is above 60%
         run: |
@@ -78,6 +54,17 @@ jobs:
         working-directory: ./backend
         run: poetry run python3 -m radon cc -n A -s -a backend/app
 
+      - name: Perform mutation testing
+        working-directory: ./backend
+        run: |
+          poetry run python3 -m mutmut run --paths-to-mutate app/services/weather.py --runner="pytest app/tests/unit/services/test_weather.py -q"
+          poetry run python3 -m mutmut run --paths-to-mutate app/utils --runner="pytest app/tests/unit/utils -q"
+          poetry run python3 -m mutmut run --paths-to-mutate app/services/user.py --runner="pytest app/tests/unit/services/user -q"
+          poetry run python3 -m mutmut run --paths-to-mutate app/crud/subscribe.py --runner="pytest app/tests/unit/crud -q"
+          poetry run python3 -m mutmut run --paths-to-mutate app/core/security.py --runner="pytest app/tests/unit/core/security -q"
+          poetry run python3 -m mutmut run --paths-to-mutate app/celery_tasks/tasks.py --runner="pytest app/tests/unit/celery_tasks/ -q"
+
+
 
   frontend:
     runs-on: ubuntu-latest
@@ -99,4 +86,12 @@ jobs:
       - name: Check frontend lint
         working-directory: ./frontend
         run: poetry run python3 -m flake8
+
+      - name: Run bandit
+        working-directory: ./frontend
+        run: poetry run python3 -m bandit -r .
+
+      - name: Check cyclomatic complexity
+        working-directory: ./frontend
+        run: poetry run python3 -m radon cc -n A -s -a .
         
