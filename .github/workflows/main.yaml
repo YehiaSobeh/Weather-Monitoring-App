@@ -20,6 +20,27 @@ jobs:
         working-directory: ./backend
         run: poetry install --no-interaction
 
+    ##
+
+      - name: Install Node.js (for Snyk CLI)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Snyk CLI
+        run: npm install -g snyk
+
+      - name: Export dependencies
+        working-directory: ./backend
+        run: poetry export -f requirements.txt --without-hashes > requirements.txt
+
+      - name: Run Snyk dependency scan
+        run: snyk test --file=requirements.txt --package-manager=pip --project-name=weather-monitoring-backend
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      
+      ##
+
       - name: Run tests and check coverage is above 60%
         run: |
           cd backend
