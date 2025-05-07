@@ -57,6 +57,7 @@ def update_weather_data(city: str):
     params = {
         "q": city,
         "appid": weather_settings.weather_api_key,  # pragma: no mutate
+        "units": "metric",  # pragma: no mutate
     }
     # here i create a mini loop event to be able to wait for the response
     # as celery task is sync ...
