@@ -184,7 +184,6 @@ def main():
             {email}
         </span>
         </p>
-        
         """,
         unsafe_allow_html=True,
     )
