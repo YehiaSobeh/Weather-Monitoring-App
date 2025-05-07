@@ -52,7 +52,7 @@ jobs:
 
       - name: Check cyclomatic complexity
         working-directory: ./backend
-        run: poetry run python3 -m radon cc -n A -s -a backend/app
+        run: poetry run python3 -m radon cc -n A -s -a .
 
       - name: Perform mutation testing
         working-directory: ./backend
