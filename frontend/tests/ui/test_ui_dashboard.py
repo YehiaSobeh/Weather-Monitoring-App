@@ -1,7 +1,7 @@
 import pytest
 import requests
 import datetime as _dt
-from unittest.mock import Mock, call
+from unittest.mock import Mock
 from frontend import dashboard
 import pandas as pd
 
@@ -66,50 +66,47 @@ def test_render_dashboard_no_city(mock_st):
     mock_st.text_input.return_value = ""
     mock_st.error = Mock()
 
-    dashboard.render_dashboard()
+    dashboard.render_current_weather()
 
     mock_st.error.assert_called_once_with("Please enter a city")
 
 
 def test_render_dashboard_success(mocker, mock_st):
-    # Prepare session state as DotDict for attribute & membership
+    # Arrange: put a valid token in session and simulate sidebar inputs
     mock_st.session_state = DotDict(access_token="test_token")
     mock_st.button.return_value = True
     mock_st.text_input.side_effect = ["Paris"]
     mock_st.radio.return_value = "Metric (°C)"
     mock_st.slider.return_value = 7
 
+    # Stub out requests.get() to return a fake “current” response
     mock_get = mocker.patch("frontend.dashboard.requests.get")
-
-    current_mock = Mock()
-    current_mock.json.return_value = {
+    current_resp = Mock()
+    current_resp.json.return_value = {
         "name": "Paris",
         "main": {"temp": 15, "humidity": 70, "pressure": 1015},
         "wind": {"speed": 5},
     }
-    hist_mock = Mock()
-    hist_mock.json.return_value = [{"fetched_at": "2023-01-01T00:00:00"}]
-    mock_get.side_effect = [current_mock, hist_mock]
+    mock_get.return_value = current_resp
 
-    dashboard.render_dashboard()
+    # Act
+    dashboard.render_current_weather()
 
-    # Verify session state was set
+    # Assert: session_state.current was set correctly
     assert mock_st.session_state.current["city"] == "Paris"
-    assert len(mock_st.session_state.history) == 1
+    assert mock_st.session_state.current["temperature"] == 15
+    assert mock_st.session_state.current["humidity"] == 70
+    assert mock_st.session_state.current["wind_speed"] == 5
+    assert mock_st.session_state.current["pressure"] == 1015
 
-    mock_get.assert_has_calls([
-        call(
-            f"{dashboard.API_URL}/weather/current/Paris",
-            headers={"Authorization": "Bearer test_token"},
-            params={"units": "metric"},
-            timeout=10
-        ),
-        call(
-            f"{dashboard.API_URL}/weather/history/Paris",
-            headers={"Authorization": "Bearer test_token"},
-            timeout=10
-        ),
-    ])
+    # Assert: exactly one GET call, to the
+    # current-weather endpoint with timeout=5
+    mock_get.assert_called_once_with(
+        f"{dashboard.API_URL}/weather/current/Paris",
+        headers={"Authorization": "Bearer test_token"},
+        params={"units": "metric"},
+        timeout=5
+    )
 
 
 def test_subscribe_success(mocker, mock_st):
