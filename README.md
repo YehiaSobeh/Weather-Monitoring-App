@@ -5,7 +5,7 @@
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat&logo=fastapi&logoColor=white)
 ![Redis](https://img.shields.io/badge/Redis-D83C3A?style=flat&logo=redis&logoColor=white)
 ![Celery](https://img.shields.io/badge/Celery-37814D?style=flat&logo=celery&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=flat&logo=postgresql&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-003B57?style=flat&logo=sqlite&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)
 ![pytest](https://img.shields.io/badge/Pytest-302C2F?style=flat&logo=pytest&logoColor=white)
 
