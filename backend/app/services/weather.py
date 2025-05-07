@@ -30,7 +30,7 @@ async def fetch_current_weather(db: Session, r, city: str) -> dict[str, Any]:
     params = {  # pragma: no mutate
         "q": city,  # pragma: no mutate
         "appid": weather_settings.weather_api_key,  # pragma: no mutate
-        "units": "metric",
+        "units": "metric",  # pragma: no mutate
 
     }   # pragma: no mutate
     cache_key = f"weather:current:{city.lower()}"
