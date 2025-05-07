@@ -4,7 +4,7 @@ SHELL := /bin/bash
 .PHONY: dev worker beat server
 
 install:
-	poetry install
+	poetry install --no-root
 
 dev: install
 	poetry run alembic upgrade head && \

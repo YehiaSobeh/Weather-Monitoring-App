@@ -17,7 +17,7 @@ def get_auth_headers():
     return {"Authorization": f"Bearer {st.session_state.access_token}"}
 
 
-def display_historical(history_items, days_back=30):
+def display_historical(history_items, days_back=10):
     st.subheader(f"Historical Data (Last {days_back} Days)")
     if not history_items:
         st.warning("No historical data available")
@@ -174,7 +174,20 @@ def main():
                 st.rerun()
         return
 
-    st.sidebar.title(f"Welcome, {st.session_state.email}")
+    email = st.session_state.email
+
+    st.sidebar.markdown(
+        f"""
+        <p style="font-size:20px; margin: 0;">
+        <strong>Welcome,</strong>
+        <span style="color: #ADD8E6; text-decoration: underline;">
+            {email}
+        </span>
+        </p>
+        
+        """,
+        unsafe_allow_html=True,
+    )
 
     if st.sidebar.button("Logout"):
         for k in list(st.session_state.keys()):
