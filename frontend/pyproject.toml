@@ -5,15 +5,26 @@ description = ""
 authors = [
     {name = "saleemasekrea000",email = "s.asekrea@innopolis.university"}
 ]
+package-mode = false
+
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "streamlit (>=1.45.0,<2.0.0)",
     "dotenv (>=0.9.9,<0.10.0)",
-    "plotly (>=6.0.1,<7.0.0)"
+    "plotly (>=6.0.1,<7.0.0)",
+    "flake8 (>=7.2.0,<8.0.0)"
 ]
 
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.group.dev.dependencies]
+bandit = "^1.8.3"
+radon = "^6.0.1"
+pytest = "^7.4"
+coverage = "^7.3"
+pytest-cov = "^4.0"
+pytest-mock = "^3.14.0"

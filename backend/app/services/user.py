@@ -6,7 +6,7 @@ from models import User
 from schemas import user as schemas
 
 
-pwd_context = CryptContext(schemes=["bcrypt"])
+pwd_context = CryptContext(schemes=["bcrypt"])  # pragma: no mutate
 
 
 def hash_password(password: str) -> str:

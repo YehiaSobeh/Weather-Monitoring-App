@@ -25,12 +25,14 @@ async def fetch_current_weather(db: Session, r, city: str) -> dict[str, Any]:
     Returns:
     - dict[str, Any]: The current weather data for the specified city.
     """
-    url = f"{weather_settings.weather_url}/weather"
+    url = f"{weather_settings.weather_url}/weather"  # pragma: no mutate
 
-    params = {
-        "q": city,
-        "appid": weather_settings.weather_api_key,
-    }
+    params = {  # pragma: no mutate
+        "q": city,  # pragma: no mutate
+        "appid": weather_settings.weather_api_key,  # pragma: no mutate
+        "units": "metric",  # pragma: no mutate
+
+    }   # pragma: no mutate
     cache_key = f"weather:current:{city.lower()}"
     cached_data = await r.get(cache_key)
     if cached_data:

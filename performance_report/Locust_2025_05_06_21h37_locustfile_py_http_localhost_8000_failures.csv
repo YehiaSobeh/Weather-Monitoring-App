@@ -1,0 +1,2 @@
+Method,Name,Error,Occurrences
+POST,/api/v1/subscribe/create,"CatchResponseError('Subscription failed. Status code: 400, Response: {""detail"":""User already has a subscription.""}')",48

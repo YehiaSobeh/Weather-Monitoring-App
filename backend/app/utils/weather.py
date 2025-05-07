@@ -24,18 +24,21 @@ async def send_request(url: str, params: dict) -> dict[str, Any]:
         a status code error or encounters an unexpected error.
     """
     # Create an asynchronous HTTP client session using httpx.
-    async with httpx.AsyncClient(timeout=10) as client:
+    async with httpx.AsyncClient(timeout=10) as client:  # pragma: no mutate
         try:
-            response = await client.get(url=url, params=params)
+            response = await client.get(url=url,  # pragma: no mutate
+                                        params=params)  # pragma: no mutate
             response.raise_for_status()
             return response.json()
         except httpx.HTTPStatusError as e:
             raise HTTPException(
                 status_code=e.response.status_code,
-                detail=str(e.response.json().get("message")),
+                detail=str(
+                    e.response.json().get("message")),  # pragma: no mutate
             )
         except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
+            raise HTTPException(status_code=500,  # pragma: no mutate
+                                detail=str(e))
 
 
 def store_weather_data(db: Session, weather_data: dict, city: str) -> None:

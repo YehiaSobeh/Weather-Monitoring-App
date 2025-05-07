@@ -7,32 +7,32 @@ from dotenv import load_dotenv
 import os
 from datetime import datetime, timedelta
 
+
 load_dotenv()
 FASTAPI_BASE = os.getenv("FASTAPI_URL", "http://localhost:8000")
 API_URL = f"{FASTAPI_BASE}/api/v1"
 
+
 def get_auth_headers():
     return {"Authorization": f"Bearer {st.session_state.access_token}"}
 
-def display_historical(history_items, days_back):
+
+def display_historical(history_items, days_back=10):
     st.subheader(f"Historical Data (Last {days_back} Days)")
     if not history_items:
         st.warning("No historical data available")
         return
 
-    # Build DataFrame and filter by date
     df = pd.DataFrame(history_items)
-    df['fetched_at'] = pd.to_datetime(df['fetched_at'])
+    df["fetched_at"] = pd.to_datetime(df["fetched_at"])
     cutoff = datetime.utcnow() - timedelta(days=days_back)
-    df = df[df['fetched_at'] >= cutoff]
+    df = df[df["fetched_at"] >= cutoff]
     if df.empty:
         st.warning("No data in the selected time range")
         return
 
-    # List out the metrics we know about
     metrics = ["temperature", "humidity", "wind_speed", "pressure"]
 
-    # For each metric, if present, plot a line chart
     for metric in metrics:
         if metric in df.columns:
             fig = px.line(
@@ -40,35 +40,36 @@ def display_historical(history_items, days_back):
                 x="fetched_at",
                 y=metric,
                 title=f"{metric.replace('_', ' ').title()} Trend",
-                labels={ "fetched_at": "Time", metric: metric.replace('_', ' ').title() }
+                labels={
+                    "fetched_at": "Time",
+                    metric: metric.replace("_", " ").title()
+                },
             )
             st.plotly_chart(fig, use_container_width=True)
 
-def render_dashboard():
-    st.title("Weather Dashboard 🌦️")
+
+def render_current_weather():
+    st.title("Current Weather 🌤️")
 
     with st.sidebar:
         st.header("Search Weather")
         city = st.text_input("City")
-        unit_system = st.radio("Units", ("Metric (°C)", "Imperial (°F)"))
-        params = {"units": "metric" if unit_system.startswith("Metric") else "imperial"}
-        days_back = st.slider("Historical Days", 1, 90, 30)
+        params = {"units": "metric"}  # Celsius only
 
-        if st.button("Get Weather"):
+        if st.button("Get Current Weather"):
             if not city:
                 st.error("Please enter a city")
             else:
                 try:
-                    # Fetch current weather
                     cur_resp = requests.get(
                         f"{API_URL}/weather/current/{city}",
                         headers=get_auth_headers(),
-                        params=params
+                        params=params,
+                        timeout=5
                     )
                     cur_resp.raise_for_status()
                     raw = cur_resp.json()
 
-                    # Flatten both OpenWeatherMap‐style payloads or your flat schema
                     if "main" in raw:
                         current = {
                             "city": raw.get("name", city),
@@ -80,38 +81,52 @@ def render_dashboard():
                     else:
                         current = raw
 
-                    # Fetch weather history
-                    hist_resp = requests.get(
-                        f"{API_URL}/weather/history/{city}",
-                        headers=get_auth_headers()
-                    )
-                    hist_resp.raise_for_status()
-                    history = hist_resp.json()
-
                     st.session_state.current = current
-                    st.session_state.history = history
-                    st.session_state.days_back = days_back
 
-                except requests.exceptions.HTTPError as e:
-                    st.error(f"Too many requests try later")
-                    #st.error(f"Error fetching weather: {e.response.text}")
+                except requests.exceptions.HTTPError:
+                    st.error("Too many requests, try later")
 
-    # Display current weather summary
     if "current" in st.session_state:
         current = st.session_state.current
         st.subheader(f"Current Weather in {current.get('city', '')}")
         try:
             cols = st.columns(3)
-            cols[0].metric("Temperature", f"{current['temperature']}°")
+            cols[0].metric("Temperature", f"{current['temperature']}°C")
             cols[1].metric("Humidity", f"{current['humidity']}%")
             cols[2].metric("Wind Speed", f"{current['wind_speed']} m/s")
         except KeyError:
             st.error("Unexpected response format:")
             st.json(current)
 
-    # Display every historical chart
+
+def render_historical_weather():
+    st.title("Historical Weather 📊")
+
+    with st.sidebar:
+        st.header("Historical Weather Settings")
+        city = st.text_input("City", key="hist_city")
+
+        if st.button("Get Historical Weather"):
+            if not city:
+                st.error("Please enter a city")
+            else:
+                try:
+                    hist_resp = requests.get(
+                        f"{API_URL}/weather/history/{city}",
+                        headers=get_auth_headers(),
+                        timeout=10
+                    )
+                    hist_resp.raise_for_status()
+                    history = hist_resp.json()
+
+                    st.session_state.history = history
+
+                except requests.exceptions.HTTPError as e:
+                    st.error(f"Error fetching history data: {e.response.text}")
+
     if "history" in st.session_state:
-        display_historical(st.session_state.history, st.session_state.days_back)
+        display_historical(st.session_state.history)
+
 
 def subscribe_page():
     st.title("Subscribe to Alerts")
@@ -128,12 +143,17 @@ def subscribe_page():
                     resp = requests.post(
                         f"{API_URL}/subscribe/create",
                         headers=get_auth_headers(),
-                        json={"city": city, "temperature_threshold": threshold}
+                        json={
+                            "city": city,
+                            "temperature_threshold": threshold
+                        },
+                        timeout=10
                     )
                     resp.raise_for_status()
                     st.success("Subscribed successfully!")
                 except requests.exceptions.HTTPError as e:
                     st.error(f"Subscription failed: {e.response.text}")
+
 
 def main():
     if "authenticated" not in st.session_state:
@@ -154,19 +174,35 @@ def main():
                 st.rerun()
         return
 
-    st.sidebar.title(f"Welcome, {st.session_state.email}")
+    email = st.session_state.email
+
+    st.sidebar.markdown(
+        f"""
+        <p style="font-size:20px; margin: 0;">
+        <strong>Welcome,</strong>
+        <span style="color: #ADD8E6; text-decoration: underline;">
+            {email}
+        </span>
+        </p>
+        """,
+        unsafe_allow_html=True,
+    )
 
     if st.sidebar.button("Logout"):
         for k in list(st.session_state.keys()):
             del st.session_state[k]
         st.rerun()
 
-    page = st.sidebar.radio("Navigate", ["Dashboard", "Subscribe"])
+    page = st.sidebar.radio("Navigate", ["Dashboard",
+                                         "Historical", "Subscribe"])
+
     if page == "Dashboard":
-        render_dashboard()
+        render_current_weather()
+    elif page == "Historical":
+        render_historical_weather()
     else:
         subscribe_page()
 
+
 if __name__ == "__main__":
     main()
-

@@ -1,0 +1,132 @@
+name: CI Pipeline
+
+on: [push, pull_request]
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run image
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: '2.1.1'
+
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: poetry install --no-interaction --no-root
+
+      - name: Run tests and check coverage is above 60%
+        run: |
+          cd backend
+          export PYTHONPATH=$PYTHONPATH:$(pwd)/app
+          poetry install --no-root
+          poetry run python3 -m coverage run -m pytest app/tests/ \
+          && poetry run python3 -m coverage report --fail-under=60 -m
+        env:
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          TOKEN_ALGORITHM: ${{ secrets.TOKEN_ALGORITHM }}
+          RSA_PUBLIC_KEY: ${{ secrets.RSA_PUBLIC_KEY }}
+          RSA_PRIVATE_KEY: ${{ secrets.RSA_PRIVATE_KEY }}
+          ACCESS_TOKEN_EXPIRES_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRES_MINUTES }}
+          REFRESH_TOKEN_EXPIRES_DAYS: ${{ secrets.REFRESH_TOKEN_EXPIRES_DAYS }}
+          WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
+          REDIS_HOST: ${{ secrets.REDIS_HOST }}
+          REDIS_PORT: ${{ secrets.REDIS_PORT }}
+          MAIL_HOST: ${{ secrets.MAIL_HOST }}
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          MAIL_PORT: ${{ secrets.MAIL_PORT }}
+
+      - name: Check backend lint
+        working-directory: ./backend
+        run: poetry run python3 -m flake8
+
+      - name: Run bandit
+        working-directory: ./backend
+        run: poetry run python3 -m bandit -r app/ -c bandit.yml
+
+      - name: Check cyclomatic complexity
+        working-directory: ./backend
+        run: poetry run python3 -m radon cc -n A -s -a .
+
+      - name: Perform mutation testing
+        working-directory: ./backend
+        env:
+          PYTHONPATH: ${{ github.workspace }}/backend/app
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          TOKEN_ALGORITHM: ${{ secrets.TOKEN_ALGORITHM }}
+          RSA_PUBLIC_KEY: ${{ secrets.RSA_PUBLIC_KEY }}
+          RSA_PRIVATE_KEY: ${{ secrets.RSA_PRIVATE_KEY }}
+          ACCESS_TOKEN_EXPIRES_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRES_MINUTES }}
+          REFRESH_TOKEN_EXPIRES_DAYS: ${{ secrets.REFRESH_TOKEN_EXPIRES_DAYS }}
+          WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
+          REDIS_HOST: ${{ secrets.REDIS_HOST }}
+          REDIS_PORT: ${{ secrets.REDIS_PORT }}
+          MAIL_HOST: ${{ secrets.MAIL_HOST }}
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          MAIL_PORT: ${{ secrets.MAIL_PORT }}
+        run: |
+          poetry run python3 -m mutmut run --paths-to-mutate app/services/weather.py --runner="pytest app/tests/unit/services/test_weather.py -q"
+          poetry run python3 -m mutmut run --paths-to-mutate app/utils --runner="pytest app/tests/unit/utils -q"
+          poetry run python3 -m mutmut run --paths-to-mutate app/services/user.py --runner="pytest app/tests/unit/services/user -q"
+          poetry run python3 -m mutmut run --paths-to-mutate app/crud/subscribe.py --runner="pytest app/tests/unit/crud -q"
+          poetry run python3 -m mutmut run --paths-to-mutate app/core/security.py --runner="pytest app/tests/unit/core/security -q"
+          poetry run python3 -m mutmut run --paths-to-mutate app/celery_tasks/tasks.py --runner="pytest app/tests/unit/celery_tasks/ -q"
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run image
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: '2.1.1'
+
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: poetry install --no-root
+
+      - name: Run tests and check coverage is above 60%
+        run: |
+          cd frontend
+          export PYTHONPATH=$PYTHONPATH:$(pwd)/app
+          poetry install --no-root
+          poetry run python3 -m coverage run -m pytest tests/ \
+          && poetry run python3 -m coverage report --fail-under=60 -m
+        env:
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          TOKEN_ALGORITHM: ${{ secrets.TOKEN_ALGORITHM }}
+          RSA_PUBLIC_KEY: ${{ secrets.RSA_PUBLIC_KEY }}
+          RSA_PRIVATE_KEY: ${{ secrets.RSA_PRIVATE_KEY }}
+          ACCESS_TOKEN_EXPIRES_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRES_MINUTES }}
+          REFRESH_TOKEN_EXPIRES_DAYS: ${{ secrets.REFRESH_TOKEN_EXPIRES_DAYS }}
+          WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
+          REDIS_HOST: ${{ secrets.REDIS_HOST }}
+          REDIS_PORT: ${{ secrets.REDIS_PORT }}
+          MAIL_HOST: ${{ secrets.MAIL_HOST }}
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          MAIL_PORT: ${{ secrets.MAIL_PORT }}
+
+      - name: Check frontend lint
+        working-directory: ./frontend
+        run: poetry run python3 -m flake8
+
+      - name: Run bandit
+        working-directory: ./frontend
+        run: poetry run python3 -m bandit -r . -c bandit.yml
+
+      - name: Check cyclomatic complexity
+        working-directory: ./frontend
+        run: poetry run python3 -m radon cc -n A -s -a .
+        
