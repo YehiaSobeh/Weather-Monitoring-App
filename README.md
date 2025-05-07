@@ -188,12 +188,28 @@ The application will be available at [localhost:8000](http://localhost:8000/)
 
 ## Tests
 
-- Fixtures: Used for setting up test data and sessions
-- Dependency Overriding: Mocking dependencies globally for all tests
+* **Backend**: Validates subscription schema, CRUD workflows, rate-limiter logic, API client resilience, and Celery task helpers.
 
-- AsyncClient with ASGITransport :Used for testing FastAPI endpoints asynchronously without making real HTTP requests
+  ```bash
+  poetry run python3 -m backend/app/tests/
+  ```
 
-- Redis Mocking
-- Respx: Used for mocking HTTP requests in tests
+* **Frontend**: Tests dashboard rendering, subscription form flow, alert list UI, and error/loading states.
 
-- tests are maintained in the tests dir. To run the tests, use the following command:
+  ```bash
+  poetry run python3 -m frontend/tests/
+  ```
+
+* **Load Testing**: Simulates concurrent `/weather/current/{city}` requests to benchmark rate limiting, caching, and task throughput via Locust.
+
+  ```bash
+  poetry run locust --host http://localhost:8000
+  ```
+
+* **Coverage**: Runs all backend tests with a coverage threshold.
+
+  ```bash
+  poetry run python3 -m coverage run -m pytest app/tests/ \
+  && poetry run python3 -m coverage report --fail-under=60 -m
+
+  ```

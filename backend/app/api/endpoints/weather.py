@@ -48,7 +48,7 @@ async def get_weather_history(
     user_id=Depends(get_user_id_from_token),
 ) -> list[WeatherHistoryItem]:
 
-    records = weather_crud.get_weather_history(db, city)
+    records = weather_crud.get_weather_history(db, city.lower())
     if not records:
         raise HTTPException(404, f"No weather history for city: {city}")
     return records
