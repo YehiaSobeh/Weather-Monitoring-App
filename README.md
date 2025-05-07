@@ -6,7 +6,7 @@
 ![Redis](https://img.shields.io/badge/Redis-D83C3A?style=flat&logo=redis&logoColor=white)
 ![Celery](https://img.shields.io/badge/Celery-37814D?style=flat&logo=celery&logoColor=white)
 ![SQLite](https://img.shields.io/badge/SQLite-003B57?style=flat&logo=sqlite&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)
+![Poetry](https://img.shields.io/badge/Poetry-1C1C1C?style=flat&logo=poetry&logoColor=white)
 ![pytest](https://img.shields.io/badge/Pytest-302C2F?style=flat&logo=pytest&logoColor=white)
 
 This repository contains the weather monitoring and alert system using Python. This system will
