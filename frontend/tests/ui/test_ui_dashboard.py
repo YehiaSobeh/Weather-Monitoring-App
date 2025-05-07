@@ -102,10 +102,12 @@ def test_render_dashboard_success(mocker, mock_st):
             f"{dashboard.API_URL}/weather/current/Paris",
             headers={"Authorization": "Bearer test_token"},
             params={"units": "metric"},
+            timeout=10
         ),
         call(
             f"{dashboard.API_URL}/weather/history/Paris",
             headers={"Authorization": "Bearer test_token"},
+            timeout=10
         ),
     ])
 
@@ -126,6 +128,7 @@ def test_subscribe_success(mocker, mock_st):
         f"{dashboard.API_URL}/subscribe/create",
         headers={"Authorization": "Bearer test_token"},
         json={"city": "London", "temperature_threshold": 25.0},
+        timeout=10,
     )
     mock_st.success.assert_called_once_with("Subscribed successfully!")
 
