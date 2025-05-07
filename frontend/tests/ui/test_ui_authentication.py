@@ -34,6 +34,7 @@ def test_login_success(mocker, mock_st):
     mock_post.assert_called_once_with(
         f"{auth.API_URL}/user/login",
         json={"email": "test@example.com", "password": "password123"},
+        timeout=10,
     )
     assert mock_st.session_state.access_token == "test_token"
     assert mock_st.session_state.authenticated is True
@@ -86,6 +87,7 @@ def test_register_success(mocker, mock_st):
             "email": "test@ex.com",
             "password": "pass"
         },
+        timeout=10,
     )
     mock_st.success.assert_called_once_with(
         "Registration successful! Redirecting to login..."
