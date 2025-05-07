@@ -100,7 +100,7 @@ jobs:
         run: |
           cd frontend
           export PYTHONPATH=$PYTHONPATH:$(pwd)/app
-          poetry install
+          poetry install --no-root
           poetry run python3 -m coverage run -m pytest tests/ \
           && poetry run python3 -m coverage report --fail-under=60 -m
         env:
