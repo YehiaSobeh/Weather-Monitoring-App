@@ -1,37 +1,48 @@
 [![CI Pipeline Status](https://github.com/YehiaSobeh/Weather-Monitoring-App/actions/workflows/main.yaml/badge.svg)](https://github.com/YehiaSobeh/Weather-Monitoring-App/actions/workflows/main.yaml)
 
-# Weather Monitoring App
+# Weather Monitoring API
 
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat&logo=fastapi&logoColor=white)
 ![Redis](https://img.shields.io/badge/Redis-D83C3A?style=flat&logo=redis&logoColor=white)
 ![Celery](https://img.shields.io/badge/Celery-37814D?style=flat&logo=celery&logoColor=white)
-![SQLite](https://img.shields.io/badge/SQLite-003B57?style=flat&logo=sqlite&logoColor=white)
+![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-D71F00?style=flat&logoColor=white)
 ![Poetry](https://img.shields.io/badge/Poetry-1C1C1C?style=flat&logo=poetry&logoColor=white)
 ![pytest](https://img.shields.io/badge/Pytest-302C2F?style=flat&logo=pytest&logoColor=white)
 
-This repository contains the weather monitoring and alert system using Python. This system will
-fetch weather data from a public API, process it asynchronously, and provide various endpoints
-for weather information and alerts.
+A weather alert service built the way a production backend is built: an async FastAPI API, Redis for caching, rate limiting, and the Celery broker, Celery Beat for scheduled refreshes and alert emails, SQLAlchemy with Alembic migrations, JWT authentication, and a CI pipeline that fails on coverage, lint, security, complexity, or surviving mutants.
 
-## Table of Contents
+## What it does
 
-1. [Setup Instructions](#setup-instructions)
-    - [Requirements](#requirements)
-    - [Poetry](#docker)
+- `GET /weather/current/{city}` returns current weather, served from Redis when fresh, fetched from the upstream API otherwise. Rate limited to 60 requests per minute per client; excess requests get HTTP 429.
+- `POST /alert/subscribe` lets a registered user subscribe to a city with a temperature threshold.
+- Celery Beat refreshes every subscribed city every 15 minutes, compares the new data against subscriptions, and sends alert emails through a Celery worker.
+- A small Streamlit dashboard (`frontend/`) for login, subscriptions, and alert history.
 
-2. [API Documentation](#api-documentation)
-    - [Alert Router](#alert-router)
-    - [Weather Router](#weather-router)
-3. [Architecture Overview](#architecture-overview)
-    - [Database](#database)
-    - [Redis](#redis)
-    - [Rate Limiter](#rate-limiter)
-    - [Celery](#celery)
-    - [Celery Tasks](#celery-tasks)
+## Why it matters
 
-4. [Design Decisions and Trade-offs](#design-decisions-and-trade-offs)
+Most tutorial weather apps stop at one endpoint. This one exercises the parts that break in real systems: cache invalidation, background work with retries, migrations, auth, and a quality gate that runs on every push. It was built for the Software Quality and Reliability course at Innopolis University and load-tested with Locust (see `performance_report/`).
 
-5. [Tests](#tests)
+![Dashboard](docs/dashboard.png)
+*[ADD SCREENSHOT: docs/dashboard.png, the Streamlit dashboard with an active subscription and a triggered alert]*
+
+## Tech stack
+
+FastAPI, Pydantic Settings, SQLAlchemy 2, Alembic, Redis, Celery + Celery Beat + Flower, PyJWT, passlib/bcrypt, httpx, Poetry, Docker, GitHub Actions. Tests: pytest, pytest-asyncio, Hypothesis (fuzzing), respx, coverage, Locust. Quality: flake8, bandit, radon, mutation testing, pre-commit.
+
+## Quality gate (CI on every push and pull request)
+
+1. pytest with coverage, build fails under 60%
+2. flake8 lint
+3. bandit security scan
+4. radon cyclomatic complexity, grade A required
+5. mutation testing
+
+## What I learned
+
+- One Redis for three jobs (cache, rate limiter, broker) is simple to run and a single point of failure. The README's trade-off section records why I accepted that for this scope.
+- Celery over FastAPI background tasks because the work has retries, schedules, and needs to scale separately from the API process.
+- Mutation testing finds tests that pass without asserting anything. It changed how I write assertions.
+
 ## Setup Instructions
 
 ### Requirements
